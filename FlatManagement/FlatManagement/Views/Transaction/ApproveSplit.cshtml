@@ -1,0 +1,172 @@
+﻿@model FlatManagement.Models.TransactionVM
+
+@{
+    ViewData["Title"] = "Approve";
+}
+
+<h4>Split Convertion</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="ApproveSplit" name="myForm" onsubmit="return validateForm()" enctype="multipart/form-data" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @Html.HiddenFor(m => m.Id)
+            @Html.HiddenFor(m => m.PreparedBy)
+            @Html.HiddenFor(m => m.TransactionStep)
+            @Html.HiddenFor(m => m.Date)
+            @Html.HiddenFor(m => m.Claim)
+            @Html.HiddenFor(model => model.FlatNo)
+            @Html.HiddenFor(model => model.FlatOwner)
+            @Html.HiddenFor(model => model.PaidBy)
+            @Html.HiddenFor(model => model.TransactionType)
+            @Html.HiddenFor(model => model.TransactionCategory)
+            @Html.HiddenFor(model => model.ReceiptFile)
+            @Html.HiddenFor(model => model.ReceiptNumber)
+            
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label asp-for="TransactionType" class="control-label font-weight-bold"></label>
+                    @Html.TextBoxFor(m => m.TransactionType, new { @maxlength = "15", @placeholder = "TransactionType", @class = " cTransactionType right form-control", @readonly = "Readonly" })
+                </div>
+
+                <div class="form-group col-md-4">
+                    <label asp-for="Purpose" class="control-label font-weight-bold"></label>
+                    <input asp-for="Purpose" class="form-control" readonly="readonly" />
+                    <span asp-validation-for="Purpose" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-2">
+                    <label asp-for="Amount" class="control-label font-weight-bold"></label>
+                    @Html.TextBoxFor(m => m.Amount, new { @maxlength = "15", @placeholder = "Amount", @class = " cAmount right form-control", @readonly = "Readonly" })
+                    <span asp-validation-for="Amount" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-2">
+                    <span class="control-label font-weight-bold">Split Amount</span>
+                    <span> @string.Format("{0:n2}", @ViewBag.splitAmountView)  @*String.Format("{0:0.00}", d)*@  </span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label asp-for="Date" class="control-label font-weight-bold"></label>
+                    <input asp-for="Date" type="text" class="form-control" value="@DateTime.Now.ToString("dd-MM-yyyy")" readonly="readonly" />
+                    <span asp-validation-for="Date" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-4">
+                    @if (Model.ReceiptNumber != null)
+                    {
+                        <label asp-for="ReceiptNumber" class="control-label font-weight-bold"></label>
+                        @Html.TextBoxFor(m => m.ReceiptNumber, new { @maxlength = "15", @placeholder = "ReceiptNumber", @class = " cReceiptNumber right form-control", @readonly = "Readonly" })
+                    }
+                </div>
+
+                <div class="form-group col-md-4">
+                    @if (Model.ReceiptFile != null)
+                    {
+                        @Html.ActionLink("Download", "DownloadFile", new { fileName = Model.ReceiptFile })
+                    }
+                    else
+                    {
+                        @*<span>No file to download!!</span>*@
+                    }
+                </div>
+            </div>
+
+            @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+            {
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label asp-for="BillType" class="control-label"></label>
+                        <span asp-validation-for="BillType" class="text-danger"></span>
+                        @Html.DropDownListFor(m => m.BillType, new SelectList(ViewBag.billType, "Value", "Text"), "Select Bill Type", new { @class = "form-control" })
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label asp-for="BillDate" class="control-label"></label>
+                        <input asp-for="BillDate" id="datepicker" type="text" class="form-control" placeholder="Bill Date" /> @*value="@DateTime.Now.ToString("dd-MM-yyyy")"*@
+                        <span asp-validation-for="BillDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label asp-for="BillDueDate" class="control-label"></label>
+                        <input asp-for="BillDueDate" id="datepicker1" type="text" class="form-control" placeholder="Due Date" />@*value="@DateTime.Now.ToString("dd-MM-yyyy")"*@
+                        <span asp-validation-for="BillDueDate" class="text-danger"></span>
+                    </div>
+                </div>
+            }
+            <div class="form-row no-print">
+
+                @if ((User.IsInRole("Admin") || User.IsInRole("Supervisor")) && Model.BillDate == null)
+                {
+                    <div class="form-group col-md-4">
+                        <input type="submit" value="Convert To Bill" class="btn btn-primary btn-block" />
+                    </div>
+                }
+                else if (User.IsInRole("Treasurer"))
+                {
+                    <div class="form-group col-md-4">
+                        <input type="submit" value="Request To Bill" class="btn btn-primary btn-block" />
+                    </div>
+                }
+                <div class="form-group col-md-3">
+                    <input type="button" onclick="window.print();" value="Print" class="btn btn-primary btn-block" />
+                </div>
+                <div class="form-group col-md-3">
+                    <a asp-action="Index" class="btn btn-secondary btn-block"><i class="fa fa-table"></i>Back to List</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            $("#datepicker").datepicker();
+            $("#datepicker1").datepicker();
+        })
+    </script>
+
+    <script>
+        function validateForm() {
+            let billTypeVar = document.forms["myForm"]["BillType"].value;
+            let billDateVar = document.forms["myForm"]["BillDate"].value;
+            let billDueDateVar = document.forms["myForm"]["BillDueDate"].value;
+
+            if (billTypeVar == "") {
+                alert("Please select bill type.");
+                return false;
+            }
+
+            if (billDateVar == "") {
+                alert("Please select bill date.");
+                return false;
+            }
+
+
+            if (billDueDateVar == "") {
+                alert("Please select due date.");
+                return false;
+            }
+        }
+    </script>
+
+
+
+    <script>
+        $("#datepicker1").change(function () {
+            var startDate = document.getElementById("datepicker").value;
+            var endDate = document.getElementById("datepicker1").value;
+
+            if ((Date.parse(startDate) >= Date.parse(endDate))) {
+                alert("Bill date should be greater than Due date");
+                document.getElementById("datepicker1").value = "";
+            }
+        });
+    </script>
+}

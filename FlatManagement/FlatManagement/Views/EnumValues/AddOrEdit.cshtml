@@ -1,0 +1,48 @@
+﻿@model FlatManagement.Models.EnumModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h4>General Entry</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="AddOrEdit">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-row">
+                <div class="form-group  col-md-6">
+                    <label asp-for="Value" class="control-label"></label>
+                    @Html.DropDownList("Value",
+                        new SelectList(Enum.GetValues(typeof(EnumValueType))),
+                        "Select Type",
+                        new { @class = "form-control" })
+
+                    <span asp-validation-for="Value" class="text-danger"></span>
+                </div>
+
+                <div class="form-group  col-md-6">
+                    <label asp-for="EnumText" class="control-label"></label>
+                    @*<input asp-for="EnumText" class="form-control" />*@
+                    @Html.TextBoxFor(m => m.EnumText, new { @class = "form-control", @maxlength = "20" })
+                    <span asp-validation-for="EnumText" class="text-danger"></span>
+                </div>
+             </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <input type="submit" value="Submit" class="btn btn-primary btn-block" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <a asp-action="Index" class="btn btn-secondary btn-block"><i class="fa fa-table"></i>Back to List</a>
+                    </div>
+                </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

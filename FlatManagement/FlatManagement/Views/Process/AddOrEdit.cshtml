@@ -1,0 +1,172 @@
+﻿@model FlatManagement.Models.ProcessVM
+
+@{
+    ViewData["Title"] = "Create";
+}
+<script>
+    function validateForm() {
+        let x = document.forms["myForm"]["FlatNo"].value;
+        let rdoValue = document.forms["myForm"]["TransactionCategory"].value;
+        let transactionTypeVar = document.forms["myForm"]["TransactionType"].value;
+        
+        if (rdoValue == 2) {
+            if (x == "") {
+                alert("Please select flat no.");
+                return false;
+            }
+        }
+
+        if (transactionTypeVar == "") {
+            alert("Please select transaction type.");
+            return false;
+        }
+    }
+</script>
+
+<h4>Create Transaction</h4>
+<hr />
+<div style="color:red">
+    @ViewBag.Message
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="AddOrEdit" name="myForm" onsubmit="return validateForm()" enctype="multipart/form-data" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            @Html.HiddenFor(m => m.Id)
+            @Html.HiddenFor(m => m.EntryDate)
+            @Html.HiddenFor(m => m.DueDate)
+            @Html.HiddenFor(m => m.BillDate)
+            @Html.HiddenFor(m => m.BillDueDate)
+            @Html.HiddenFor(m => m.BillType)
+            @Html.HiddenFor(m => m.BillFor)
+            @Html.HiddenFor(m => m.BillAmount)
+            @Html.HiddenFor(m => m.Claim)
+
+
+
+
+            <div class="form-row">
+                <div class="form-group  col-md-6">
+                    
+                   
+                    <label asp-for="FlowTypes" class="control-label"></label>
+                    <select asp-for="FlowTypes" asp-items="Html.GetEnumSelectList<TransType>()" class="form-control"></select>
+
+                </div>
+                <div class="form-group  col-md-6">
+                    <label asp-for="Purpose" class="control-label font-weight-bold"></label><span>*</span>
+                    @Html.TextArea("Purpose", null, new { @placeholder = "Purpose", @class = " cPurpose form-control" })
+                    <span asp-validation-for="Purpose" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    @if (!User.IsInRole("FlatOwner"))
+                    {
+                        if (@Model.Id > 0)
+                        {
+                            <span>Transaction Category:</span>
+                            if (@Model.TransactionCategory == "1")
+                            {
+                                <span> Common Fund </span>
+                                @Html.HiddenFor(m => m.TransactionCategory)
+                            }
+                            else
+                            {
+                                <span> Flat Owner </span>
+                                @Html.HiddenFor(m => m.TransactionCategory)
+                            }
+                            <br /><span>Flat No:</span>
+                            @Html.TextBoxFor(m => m.FlatNo, new { @placeholder = "Flat No", @class = "cFlatNo form-control", @readonly = "readonly" })
+                        }
+                        else
+                        {
+                            <div class="form-group">
+                                <label asp-for="PaidBy" class="control-label font-weight-bold"></label>
+
+                                <div id="myRadioGroup">
+                                    <input type="radio" name="TransactionCategory" checked="checked" value="1" /> <span> Common Fund </span>
+                                    <input type="radio" name="TransactionCategory" value="2" />Flat Owner
+                                    <div id="TransactionCategory1" class="desc">
+                                    </div>
+                                    <div id="TransactionCategory2" class="desc" style="display: none;">
+                                        @Html.DropDownListFor(m => m.FlatNo, new SelectList(ViewBag.FlatNo, "Value", "Text"), "Select Flat")
+                                        <br />
+                                        Other:<input asp-for="PaidBy" class="form-control" placeholder="Received From" />
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="Amount" class="control-label font-weight-bold"></label>
+                    @Html.TextBoxFor(m => m.Amount, new { @maxlength = "15", @placeholder = "Amount", @class = " cAmount right form-control" })
+                    <span asp-validation-for="Amount" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="TransDate" class="control-label font-weight-bold"></label>
+                    @Html.TextBoxFor(model => model.TransDate, "{0:dd-MM-yyyy}", new { @class = "cDate form-control", placeholder = "Select Date", id = "datepicker" }) 
+                    <span asp-validation-for="TransDate" class="text-danger"></span>
+                </div>
+            </div>
+           
+            <div class="form-row no-print">
+                
+
+        @if (Model.Id == 0)
+        {
+            <div class="form-group col-md-6">
+            <input type="submit" value="Submit" class="btn btn-primary btn-block" />
+        </div>
+        }
+
+        @if (Model.Id != 0)
+        {
+            <div class="form-group col-md-6">
+                    <input type="button" value="Print" onclick="javascript: window.print();" class="btn btn-primary btn-block" />
+                </div>
+        }
+
+
+                <div class="form-group col-md-6">
+                    <a asp-action="Index" class="btn btn-secondary btn-block"><i class="fa fa-table"></i>Back to List</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            $("#datepicker").datepicker();
+        });
+    </script>
+
+
+    <script>
+        $(document).ready(function () {
+            $("input[name$='TransactionCategory']").click(function () {
+                var test = $(this).val();
+
+                $("div.desc").hide();
+                $("#TransactionCategory" + test).show();
+            });
+        });
+    </script>
+}

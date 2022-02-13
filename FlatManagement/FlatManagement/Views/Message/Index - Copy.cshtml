@@ -1,0 +1,78 @@
+﻿@model List<SelectListItem>
+@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Invitation (Email/SMS)";
+}
+
+
+    <script type="text/javascript">
+        <!--
+        // Form validation code will come here.
+        function validate() {
+      
+            if (document.myForm.txtMsgBody.value == "" ) {
+            alert("Please write details!");
+        document.myForm.Name.focus() ;
+        return false;
+         }
+    }
+    </script>
+
+<form method="post" name="myForm" asp-controller="Message" asp-action="Index" onsubmit = "return(validate());">
+    <table>
+        <tr><td colspan="2">&nbsp;</td></tr>
+        <tr>
+            <td align="center" valign="top"> <b>Message</b></td>
+            <td>
+                <textarea name="txtMsgBody" cols="45" rows="3"></textarea>
+            </td>
+        </tr>
+        <tr><td colspan="1"><b>Invite:</b></td></tr>
+        @foreach (var flatOwner in Model)
+        {
+            <tr>
+                <td>
+                    <input id="@flatOwner.Value" type="checkbox" name="flatOwnerList" value="@flatOwner.Value" checked="@flatOwner.Selected" />
+                </td>
+                <td>
+                    <label for="@flatOwner.Value">@flatOwner.Text</label>
+                </td>
+            </tr>
+        }
+    </table>
+    <br />
+
+    <table>
+        <tr>
+            <td><input type="submit" id="btnEmail" name="Submit" value="Email" /></td>
+            <td><input type="submit" id="btnSMS" name="Submit" value="SMS" /></td>
+            <td><a asp-action="Index" asp-controller="Home" class="btn btn-secondary btn-block"><i class="fa fa-table"></i>Back to List</a></td>
+        </tr>
+    </table>
+
+
+</form>
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewBag.Message");
+            };
+    </script>
+}
+
+
+@if (TempData["Message"] != null)
+{
+    <script type="text/javascript">
+            window.onload = function () {
+                alert('@TempData["Message"]');
+            };
+    </script>
+}
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

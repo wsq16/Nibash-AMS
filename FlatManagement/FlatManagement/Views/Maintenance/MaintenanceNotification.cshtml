@@ -1,0 +1,83 @@
+﻿@model List<SelectListItem>
+@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+
+
+@*@model FlatManagement.Models.MaintenanceVM*@
+
+@{
+    ViewData["Title"] = "Notification";
+}
+
+
+<h4>Send Notification</h4>
+
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-controller="Maintenance" asp-action="SendEmailNotification">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input id="category"
+                   name="category"
+                   type="hidden"
+                   value="@ViewBag.category" />
+            <input id="amount"
+                   name="amount"
+                   type="hidden"
+                   value="@ViewBag.amount" />
+            <input id="Date"
+                   name="Date"
+                   type="hidden"
+                   value="@ViewBag.Date" />
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    Category : @ViewBag.category
+                </div>
+
+                <div class="form-group col-md-4">
+                    Amount : @ViewBag.amount
+                </div>
+
+                <div class="form-group col-md-4">
+                    Date : @ViewBag.Date
+                </div>
+
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    Send Email Notification To:
+                </div>
+            </div>
+            @{ int rowNo = 0; }
+            @foreach (var flatOwner in Model)
+            {
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        &nbsp;
+                    </div>
+                    <div class="form-group col-md-2">
+                        @{rowNo++;} @rowNo
+                        &nbsp;| &nbsp;
+                        <input id="@flatOwner.Value" type="checkbox" name="flatOwnerList" value="@flatOwner.Value" checked="@flatOwner.Selected" />
+                    </div>
+                    <div class="form-group col-md-7">
+                        <label for="@flatOwner.Value">@flatOwner.Text</label>
+                    </div>
+                </div>
+                <hr />
+            }
+
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <input type="submit" id="btnInvite" name="Invite" value="Notify" class="btn btn-primary btn-block" />
+                </div>
+                <div class="form-group col-md-4">
+                    <a asp-action="Index" asp-controller="Maintenance" class="btn btn-secondary btn-block"><i class="fa fa-table"></i>Back to List</a>
+                </div>
+            </div>
+        </form>
+        </div>
+    </div>
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    }

@@ -3,3 +3,6 @@
 ################################################################################
 
 /.vs
+/FlatManagement/.vs/FlatManagement
+/FlatManagement/FlatManagement/bin
+/FlatManagement/FlatManagement/obj

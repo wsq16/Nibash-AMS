@@ -1,0 +1,110 @@
+﻿@model FlatManagement.Models.BillVM
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+
+<h4>Bill</h4>
+<hr />
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="AddOrEdit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="PreparedBy" value=" @User.Identity.Name" />
+            <input type="hidden" asp-for="EntryDate" value="@DateTime.Now" /> @*<input type="hidden" asp-for="BillDate" value="@DateTime.Now" />*@
+            
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="BillType" class="control-label"></label>
+                    <span asp-validation-for="BillType" class="text-danger"></span>
+                    @Html.DropDownListFor(m => m.BillType, new SelectList(ViewBag.billType, "Value", "Text"), "Select Bill Type", new { @class = "form-control" })
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="BillDate" class="control-label"></label>
+                    <input asp-for="BillDate" id="datepicker" type="text" class="form-control" placeholder="Bill Date" /> @*value="@DateTime.Now.ToString("dd-MM-yyyy")"*@
+                    <span asp-validation-for="BillDate" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="BillFor" class="control-label"></label>
+                    @*@Html.DropDownList("BillFor", Html.GetEnumSelectList<BillVM.CartStatus>(), "Select Bill For", new { @class = "form-control" })*@
+                    @Html.DropDownListFor(m => m.BillFor, new SelectList(ViewBag.BillFor, "Value", "Text"), "Select Bill")
+                    <span asp-validation-for="BillFor" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label asp-for="Amount" class="control-label"></label>
+                    @Html.TextBoxFor(m => m.Amount, new { placeholder = "Amount", @class = "form-input" })
+                    <span asp-validation-for="Amount" class="text-danger"></span>
+                </div>
+
+            </div>
+            <div class="form-row" id="FlatNo" style="display: none">
+                <div class="form-group col-md-12">
+                    <label asp-for="FlatNo" class="control-label"></label>
+                    @Html.DropDownListFor(m => m.FlatNo, new SelectList(ViewBag.FlatNo, "Value", "Text"), "Select Flat")
+                    <span asp-validation-for="FlatNo" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="DueDate" class="control-label"></label>
+                    <input asp-for="DueDate" id="datepicker1" type="text" class="form-control" value="" placeholder="Due Date" />@*value="@DateTime.Now.ToString("dd-MM-yyyy")"*@
+                    <span asp-validation-for="DueDate" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label asp-for="Remarks" class="control-label"></label>
+                    @Html.TextArea("Remarks", null, new { @placeholder = "Remarks", @class = " cRemarks form-control" })
+                    <span asp-validation-for="Remarks" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <input type="submit" value="Submit" class="btn btn-primary btn-block" />
+                </div>
+                <div class="form-group col-md-6">
+                    <a asp-action="Index" class="btn btn-secondary btn-block"><i class="fa fa-table"></i>Back to List</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            $.datepicker.parseDate("yy-mm-dd", "2007-01-26");
+
+            $("#datepicker").datepicker();
+            $("#datepicker1").datepicker();
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            $("#BillFor").change(function () {
+                if ($(this).val() == "1") {
+                    $("#FlatNo").show();
+                } else {
+                    $("#FlatNo").hide();
+                }
+            });
+        });
+    </script>
+}

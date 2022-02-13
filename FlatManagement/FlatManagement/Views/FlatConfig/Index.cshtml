@@ -1,0 +1,83 @@
+﻿@model IEnumerable<FlatManagement.Models.FlatConfigVM>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Flat List</h1>
+<hr />
+
+<table class="table table-hover" id="flatdatatable">
+    <thead>
+        <tr style="background-color: #f7ecfd">
+            <th>
+                Sl.
+            </th>
+            <th>
+                @Html.Label("Wing")
+            </th>
+            <th>
+                @Html.Label("Floor")
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FlatNo)
+            </th>
+            <th>
+                @Html.Label("Action")
+            </th>
+            <th>
+                @if (Model.Count() <= 0)
+                {
+                    <a asp-action="AddOrEdit" class="btn btn-outline-success"><i class="far fa fa-plus-square"></i>Create Flat</a>
+                }
+                @*<a asp-action="AddOrEdit" class="btn btn-outline-success"><i class="far fa fa-plus-square"></i>Flat</a>*@
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ int rowNo = 0; }
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @{rowNo++;} @rowNo
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.WingName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Floor)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FlatNo)
+            </td>
+            <td>
+            </td>
+            <td>
+                @*<a asp-action="AddOrEdit" asp-route-id="@item.FlatNo"><i class="fas fa-marker fa-lg"></i></a> |*@
+
+                @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Supervisor")|| User.IsInRole("Admin")))
+                {
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="text-danger ml-1" onclick="return confirm('Are you sure to delete this record?')"><i class="fas fa-trash-alt fa-lg"></i></a>
+                }
+                </td>
+        </tr>
+        }
+
+
+    </tbody>
+</table>
+
+@section Scripts
+{
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.css" />
+
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#flatdatatable").DataTable();
+        }
+        )
+    </script>
+}

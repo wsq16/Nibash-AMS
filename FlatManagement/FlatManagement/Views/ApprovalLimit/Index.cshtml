@@ -1,0 +1,88 @@
+﻿@model IEnumerable<FlatManagement.Models.ApprovalLimitVM>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Approval Limit Master Table</h1>
+<hr />
+
+<table class="table table-hover" id="flatdatatable">
+    <thead>
+        <tr style="background-color: #f7ecfd">
+            <th>
+                Sl.
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Flow)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RoleName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AmountLimit_MIN)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AmountLimit_MAX)
+            </th>
+            @*<th>
+                @Html.DisplayNameFor(model => model.CreateDate)
+            </th>*@
+
+            <th>
+
+                <a asp-action="AddOrEdit" class="btn btn-outline-success"><i class="far fa fa-plus-square"></i>New</a>
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ int rowNo = 0; }
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @{rowNo++;} @rowNo
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Flow)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RoleName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AmountLimit_MIN)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AmountLimit_MAX)
+            </td>
+            @*<td>
+                @Html.DisplayFor(modelItem => item.CreateDate)
+            </td>*@
+            <td>
+                <a asp-action="AddOrEdit" asp-route-id="@item.Id"><i class="fas fa-marker fa-lg"></i></a> |
+                <a asp-action="Delete" asp-route-id="@item.Id" class="text-danger ml-1" onclick="return confirm('Are you sure to delete this record?')"><i class="fas fa-trash-alt fa-lg"></i></a>
+
+                @*<a class="btn btn-info" href="/Agenda/Invitation?AgendaId=@item.Id&AgendaDetails=@item.AgendaDetails&AgendaAttachment=@item.Attachment&AgendaDate=@item.AgendaDate&AgendaName=@item.AgendaName"><i class="far fa-comment-alt"></i></a>
+            <a asp-controller="Agenda" asp-action="Invitation">  </a>*@
+            </td>
+        </tr>
+        }
+
+
+    </tbody>
+</table>
+
+@section Scripts
+{
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.css" />
+
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#flatdatatable").DataTable();
+        }
+        )
+    </script>
+}

@@ -1,0 +1,190 @@
+﻿@model FlatManagement.Models.ResolutionVM
+
+@{
+    ViewData["Title"] = "Create";
+}
+<h4>Resolution/Status(SMS/Mail)</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="AddOrEdit" enctype="multipart/form-data" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            @Html.HiddenFor(m => m.Attachment)
+            
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="AgendaName" class="control-label"></label>
+                    @Html.TextBoxFor(model => model.AgendaName, new { @placeholder = "Agenda Name", @class = "cAgendaName form-control", @readonly = "readonly" })
+                    <span asp-validation-for="AgendaName" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="PointNo" class="control-label"></label>
+                    <input asp-for="PointNo" class="form-control" readonly />
+                    <span asp-validation-for="PointNo" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label asp-for="StartDate" class="control-label font-weight-bold"></label><span>*</span>
+                    @Html.TextBoxFor(model => model.StartDate, "{0:dd-MM-yyyy}", new { @class = "cDate form-control", placeholder = "Date", id = "datepicker", @readonly = "readonly" })
+                    <span asp-validation-for="StartDate" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-3">
+                    @Html.Label("Start Time")
+                    <input data-clocklet maxlength="5" asp-for="startTime" name="startTime" readonly>
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label asp-for="DueDate" class="control-label font-weight-bold"></label><span>*</span>
+                    @Html.TextBoxFor(model => model.DueDate, "{0:dd-MM-yyyy}", new { @class = "cDate form-control", placeholder = "Date", id = "datepicker1", @readonly = "readonly" })
+                    <span asp-validation-for="DueDate" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    @Html.Label("End Time")
+                    <input data-clocklet maxlength="5" asp-for="endTime" name="endTime" readonly>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label asp-for="Resolution" class="control-label"></label>
+                    @Html.TextAreaFor(m => m.Resolution, new { placeholder = "Please add Resolution here", @class = "form-control", @readonly = "readonly" })
+                    <span asp-validation-for="Resolution" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="ResponsibilityFlatOwner" class="control-label"></label>
+                    <input asp-for="ResponsibilityFlatOwner" class="form-control" readonly />
+                    <span asp-validation-for="ResponsibilityFlatOwner" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="ResponsibilityEmployee" class="control-label"></label>
+                    <input asp-for="ResponsibilityEmployee" class="form-control" readonly />
+                    <span asp-validation-for="ResponsibilityEmployee" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label asp-for="Status" class="control-label"></label>
+                    <select asp-for="Status" class="form-control">
+                        <option value="">Select Resolution Status</option>
+                        <option value="Open">Open</option>
+                        <option value="InProgress">InProgress</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-3" id="divClosingNote" style="display:none;">
+                    <label asp-for="ResolutionClosingNote" class="control-label"></label>
+                    @Html.TextBoxFor(m => m.ResolutionClosingNote, new { placeholder = "Resolution Closing Note", @class = "form-input" })
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-3 no-print">
+                    <label asp-for="Attachment" class="control-label"></label>
+                    <input type="file" name="Attachment" id="Attachment">
+
+                    @if (Model.Attachment != null && Model.Attachment != "")
+                    {
+                        <div class="col-md-2">
+                            @Html.LabelFor(model => model.Attachment, new { @class = "attachment" })
+                            <div class="col-md-3">
+                                <a class="" target="_blank" href="~/Files/@Model.Attachment">
+                                    <img class="attachment" src="~/assets/icons/files.png" width="30" alt="File" title="File" />
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-12" id="divClosingNote">
+                    <div class="form-group col-md-6">
+                        Message type:
+                        @Html.CheckBoxFor(m => m.msg_SMS) SMS <span>&nbsp;</span>
+                        @Html.CheckBoxFor(m => m.msg_EMAIL) EMAIL<span>&nbsp;</span>
+                        @Html.CheckBoxFor(m => m.msg_BOTH) BOTH<span>&nbsp;</span>
+                    </div>
+                    <div class="form-group col-md-6">
+                        Message Send to:
+                        @Html.CheckBoxFor(m => m.to_Committee) Committee<span>&nbsp;</span>
+                        @Html.CheckBoxFor(m => m.to_Treasurer) Treasurer<span>&nbsp;</span>
+                        @Html.CheckBoxFor(m => m.to_FlatOwner) Flat Owner<span>&nbsp;</span>
+                        @Html.CheckBoxFor(m => m.to_All) All
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="form-row no-print">
+                @if (Model.Id != 0)
+                {
+                    <div class="form-group col-md-4">
+                        <input type="submit" value="Send Message" class="btn btn-primary btn-block" />
+                    </div>
+                    <div class="form-group col-md-4">
+                        <input type="button" value="Print" onclick="javascript: window.print();" class="btn btn-primary btn-block" />
+                    </div>
+                }
+                <div class="form-group col-md-4">
+                    <a asp-action="Index" class="btn btn-secondary btn-block"><i class="fa fa-table"></i>Back to List</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+<script type="text/javascript">
+    //FOr Message sending
+    $("#msg_BOTH").click(function () {
+
+        var checkBox = document.getElementById("msg_BOTH");
+
+        if (checkBox.checked == true) {
+            document.getElementById("msg_SMS").checked = false;
+            document.getElementById("msg_EMAIL").checked = false;
+
+            document.getElementById("msg_SMS").disabled = true;
+            document.getElementById("msg_EMAIL").disabled = true;
+        } else {
+            document.getElementById("msg_SMS").disabled = false;
+            document.getElementById("msg_EMAIL").disabled = false;
+        }
+    });
+
+
+        ///For Message receivers
+        $("#to_All").click(function () {
+
+        var checkBox = document.getElementById("to_All");
+
+        if (checkBox.checked == true) {
+            document.getElementById("to_Committee").checked = false;
+            document.getElementById("to_Treasurer").checked = false;
+            document.getElementById("to_FlatOwner").checked = false;
+
+            document.getElementById("to_Committee").disabled = true;
+            document.getElementById("to_Treasurer").disabled = true;
+            document.getElementById("to_FlatOwner").disabled = true;
+        } else {
+            document.getElementById("to_Committee").disabled = false;
+            document.getElementById("to_Treasurer").disabled = false;
+            document.getElementById("to_FlatOwner").disabled = false;
+        }
+    });
+</script>
+
+}

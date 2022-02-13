@@ -1,0 +1,120 @@
+﻿@model FlatManagement.Models.CommonFundVM
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+
+<h4>Create Fund</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="AddOrEdit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            @Html.HiddenFor(m => m.FlatOwner, new { Value = "flatOwner" })
+            @Html.HiddenFor(m => m.CollectionBy, new { Value = @User.Identity.Name })
+            @*@Html.HiddenFor(m => m.CollectionDate)*@
+            
+
+            <div class="form-row">
+                <div class="form-group  col-md-6">
+                    @Html.LabelFor(m => m.FundType, new { @class = "control-label" })<span>*</span>
+                    @*<select asp-for="FundType" asp-items="@(new SelectList( ViewBag.fundType,"EnumText","EnumText"))" , class="form-control"></select>*@
+                    @Html.DropDownListFor(m => m.FundType, new SelectList(ViewBag.fundType, "Value", "Text"), "Select Fund Type", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.FundType)
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="FlatNo" class="control-label"></label><span>*</span>
+                    @Html.DropDownListFor(m => m.FlatNo,
+                       new SelectList(ViewBag.FlatNo, "Value", "Text"),
+                       "Select Flat", new { @class = "form-control" })
+                    <span asp-validation-for="FlatNo" class="text-danger"></span>
+                </div>
+            </div>
+
+
+
+            <div class="form-row">
+                <div class="form-group  col-md-6">
+                    @Html.LabelFor(m => m.Amount, new { @class = "control-label" })<span>*</span>
+                    @Html.TextBoxFor(m => m.Amount, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Amount)
+                </div>
+                <div class="form-group  col-md-6">
+                    @Html.LabelFor(m => m.Month, new { @class = "control-label" })<span>*</span>
+                    @*@Html.DropDownList("Month", (SelectList)ViewBag.Month, new { @class = "form-control" })*@
+                    <select asp-for="Month" name="Month" class="form-control" asp-items="@ViewBag.Month"></select>
+                    @Html.ValidationMessageFor(m => m.Month)
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group  col-md-6">
+                    @Html.LabelFor(m => m.Year, new { @class = "control-label" })<span>*</span>
+                    <select asp-for="Year" name="Year" class="form-control" asp-items="@ViewBag.Years"></select>
+                    @*@Html.DropDownListFor(model => model.Year, (IEnumerable<SelectListItem>)ViewBag.Years, "Year", new { @class = "form-control" })*@
+                    @Html.ValidationMessageFor(m => m.Year)
+                </div>
+                <div class="form-group  col-md-6">
+                    @Html.LabelFor(m => m.CollectionDate, new { @class = "control-label" })<span>*</span>
+                    @*@Html.TextBoxFor(m => m.CollectionDate, new { @class = "form-control" })*@
+                    @Html.TextBoxFor(m => m.CollectionDate, "{0:dd-MM-yyyy}", new { @class = "cCollectionDate form-control", placeholder = "Collection Date", id = "CollectionDateID" })  @*"{0:dd-MM-yyyy}",*@
+                    
+                    @Html.ValidationMessageFor(m => m.CollectionDate)
+                </div>
+
+            </div>
+
+
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <input type="submit" value="Submit" class="btn btn-primary btn-block" />
+                </div>
+                <div class="form-group col-md-6">
+                    <a asp-action="Index" class="btn btn-secondary btn-block"><i class="fa fa-table"></i>Back to List</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <!--For Datepicker-->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            /* format: 'dd/mm/yyyy'*/
+            $("#CollectionDateID").datepicker();
+        });
+    </script>
+
+    <script>
+        var i = 0;
+        for (i = 2000; i <= 2025; i++) {
+            $("#Year").append("<option value='" + i + "'>" + i + "</option>")
+        }
+    </script>
+
+    <script>
+        var Commission = parseFloat($('.cCommision').val().replace(/\,/g, ''));
+        if (isNaN(Commission) || Commission <= 0) {
+            ShowResult("Fail", "Commission can't be not be zero");
+            $('.cCommision').css('background-color', 'yellow');
+
+            return;
+        }
+    </script>
+
+
+
+
+}

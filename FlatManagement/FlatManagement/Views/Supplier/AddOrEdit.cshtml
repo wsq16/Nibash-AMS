@@ -1,0 +1,165 @@
+﻿@model FlatManagement.Models.SupplierVM
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+
+<h4>Create Supplier</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="AddOrEdit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="PrepairedBy" />
+
+            <div class="form-row">
+                <div class="form-group  col-md-6">
+                    <label asp-for="Type" class="control-label"></label>
+                    <input asp-for="Type" class="form-control" />
+                    <span asp-validation-for="Type" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="Amount" class="control-label"></label>
+                    <input asp-for="Amount" class="form-control" />
+                    <span asp-validation-for="Amount" class="text-danger"></span>
+                </div>
+
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="Start_Date" class="control-label"></label>
+                    <input asp-for="Start_Date" id="datepicker" placeholder="select date" type="text" class="form-control" />
+                    <span asp-validation-for="Start_Date" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="End_Date" class="control-label"></label>
+                    <input asp-for="End_Date" id="datepicker1" placeholder="select date" type="text" class="form-control" />
+                    <span asp-validation-for="End_Date" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="Pre_Address" class="control-label"></label>
+                    <input asp-for="Pre_Address" class="form-control" />
+                    <span asp-validation-for="Pre_Address" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="Per_Address" class="control-label"></label>&nbsp; [<span>Same as present address</span><input type="checkbox" id="filladdress" name="filladdress" /> ]
+                    <input asp-for="Per_Address" class="form-control" />
+                    <span asp-validation-for="Per_Address" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-row">
+
+                <div class="form-group col-md-6">
+                    <label asp-for="Email" class="control-label"></label><span>*</span>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="Mobile" class="control-label"></label>
+                    <input asp-for="Mobile" class="form-control" onkeypress='javascript: return isNumber(event)' autocomplete='off' />
+                    <span asp-validation-for="Mobile" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="NID" class="control-label"></label>
+                    <input asp-for="NID" class="form-control" onkeypress='javascript: return isNumber(event)' autocomplete='off' />
+                    <span asp-validation-for="NID" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="ETIN" class="control-label"></label>
+                    <input asp-for="ETIN" class="form-control" onkeypress='javascript: return isNumber(event)' autocomplete='off' />
+                    <span asp-validation-for="ETIN" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <input type="submit" value="Submit" class="btn btn-primary btn-block" />
+                </div>
+                <div class="form-group col-md-6">
+                    <a asp-action="Index" class="btn btn-secondary btn-block"><i class="fa fa-table"></i>Back to List</a>
+                </div>
+            </div>
+
+
+
+
+        </form>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            $("#datepicker").datepicker();
+            $("#datepicker1").datepicker();
+        });
+    </script>
+
+    <script>
+        $("#datepicker1").change(function () {
+            var startDate = document.getElementById("datepicker").value;
+            var endDate = document.getElementById("datepicker1").value;
+
+            if ((Date.parse(startDate) >= Date.parse(endDate))) {
+                alert("End date should be greater than Start date");
+                document.getElementById("datepicker1").value = "";
+            }
+        });
+    </script>
+
+
+<script>
+    $(document).ready(function () {
+        $("#filladdress").on("click", function () {
+            if (this.checked) {
+                $("#Per_Address").val($("#Pre_Address").val());
+            }
+            else {
+                $("#Per_Address").val('');
+            }
+        });
+    });
+</script>
+
+
+
+
+
+<script>
+    // Write the validation script.
+    function isNumber(evt) {
+        var iKeyCode = (evt.which) ? evt.which : evt.keyCode
+        if (iKeyCode != 46 && iKeyCode > 31 && (iKeyCode < 48 || iKeyCode > 57))
+            return false;
+
+        return true;
+    }
+
+    // Using (new) ES6 features.
+
+    //let isNumber = (evt) => {
+    //    var iKeyCode = (evt.which) ? evt.which : evt.keyCode
+    //    if (iKeyCode != 46 && iKeyCode > 31 && (iKeyCode < 48 || iKeyCode > 57))
+    //        return false;
+
+    //    return true;
+    //}
+</script>
+
+
+
+}

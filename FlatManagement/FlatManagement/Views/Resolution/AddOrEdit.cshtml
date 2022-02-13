@@ -1,0 +1,187 @@
+﻿@model FlatManagement.Models.ResolutionVM
+
+@{
+    ViewData["Title"] = "Create";
+}
+<link href="~/css/clocklet.min.css" rel="stylesheet" />
+<script src="~/js/clocklet.min.js"></script>
+
+<h4>Resolution/Status</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="AddOrEdit" enctype="multipart/form-data" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            @*@Html.HiddenFor(m => m.Attachment)
+            @Html.HiddenFor(m => m.DueDate)*@
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="AgendaName" class="control-label"></label>
+                    @Html.DropDownList("AgendaName", new SelectList(ViewBag.agendaList, "Value", "Text"), "Select Agenda", new { @class = "form-control" })
+                    <span asp-validation-for="AgendaName" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="PointNo" class="control-label"></label>
+                    <input asp-for="PointNo" class="form-control" />
+                    <span asp-validation-for="PointNo" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label asp-for="StartDate" class="control-label font-weight-bold"></label><span>*</span>
+                    @Html.TextBoxFor(model => model.StartDate, "{0:dd-MM-yyyy}", new { @class = "cDate form-control", placeholder = "Date", id = "datepicker" })
+                    <span asp-validation-for="StartDate" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-3">
+                    @Html.Label("Start Time")
+                    <input data-clocklet maxlength="5" asp-for="startTime" name="startTime">
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label asp-for="DueDate" class="control-label font-weight-bold"></label><span>*</span>
+                    @Html.TextBoxFor(model => model.DueDate, "{0:dd-MM-yyyy}", new { @class = "cDate form-control", placeholder = "Date", id = "datepicker1" })
+                    <span asp-validation-for="DueDate" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    @Html.Label("End Time")
+                    <input data-clocklet maxlength="5" asp-for="endTime" name="endTime">
+                </div>
+                @*TimePicker: https://luncheon.github.io/clocklet/demo.html*@
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label asp-for="Resolution" class="control-label"></label>
+                    @Html.TextAreaFor(m => m.Resolution, new { placeholder = "Please add Resolution here", @class = "form-control" })
+                    <span asp-validation-for="Resolution" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="ResponsibilityFlatOwner" class="control-label"></label>
+                    @Html.DropDownListFor(m => m.ResponsibilityFlatOwner, new SelectList(ViewBag.Responsibility, "Value", "Text"), "Select Person", new { @class = "form-control" })
+                    <span asp-validation-for="ResponsibilityFlatOwner" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-3">
+                    <label asp-for="ResponsibilityEmployee" class="control-label"></label>
+                    @Html.DropDownListFor(m => m.ResponsibilityEmployee, new SelectList(ViewBag.ResponsibilityEmployee, "Value", "Text"), "Select Person", new { @class = "form-control" })
+                    <span asp-validation-for="ResponsibilityEmployee" class="text-danger"></span>
+                </div>
+
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label asp-for="Status" class="control-label"></label>
+                    @*@Html.DropDownList("Status", Html.GetEnumSelectList<ResolutionStatus>(), "Select", new { @class = "form-control", id = "Status" })*@
+                    @*@Html.DropDownListFor(m => m.Status,
+                new SelectList(Enum.GetValues(typeof(ResolutionStatus))),
+                    "Select Resolution Status")*@
+
+                    <select asp-for="Status" class="form-control">
+                        <option value="">Select Resolution Status</option>
+                        <option value="Open">Open</option>
+                        <option value="InProgress">InProgress</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-3" id="divClosingNote" style="display:none;">
+                    <label asp-for="ResolutionClosingNote" class="control-label"></label>
+                    @Html.TextBoxFor(m => m.ResolutionClosingNote, new { placeholder = "Resolution Closing Note", @class = "form-input" })
+                </div>
+
+
+                <div class="form-group col-md-3 no-print">
+                    <label asp-for="Attachment" class="control-label"></label>
+                    <input type="file" name="Attachment" id="Attachment">
+
+                    @if (Model.Attachment != null && Model.Attachment != "")
+                    {
+                        <div class="col-md-2">
+                            @Html.LabelFor(model => model.Attachment, new { @class = "attachment" })
+                            <div class="col-md-3">
+                                <a class="" target="_blank" href="~/Files/@Model.Attachment">
+                                    <img class="attachment" src="~/assets/icons/files.png" width="30" alt="File" title="File" />
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+
+            <div class="form-row no-print">
+                @if (Model.Id == 0)
+                {
+                    <div class="form-group col-md-6">
+                        <input type="submit" value="Save" class="btn btn-primary btn-block" />
+                    </div>
+                }
+                @if (Model.Id != 0)
+                {
+                    <div class="form-group col-md-6">
+                        <input type="button" value="Print" onclick="javascript: window.print();" class="btn btn-primary btn-block" />
+                    </div>
+                }
+                <div class="form-group col-md-6">
+                    <a asp-action="Index" class="btn btn-secondary btn-block"><i class="fa fa-table"></i>Back to List</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        $(function () {
+            $("#Status").change(function () {
+                var selectedText = $(this).find("option:selected").text();
+                var selectedValue = $(this).val();
+                var x = document.getElementById("divClosingNote");
+                if (selectedValue == "Completed") {
+                    if (x.style.display === "none") {
+                        x.style.display = "block";
+                    } else {
+                        x.style.display = "none";
+                    }
+
+                } else {
+                    x.style.display = "none";
+                }
+            });
+        });
+    </script>
+
+
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            $("#datepicker").datepicker();
+            $("#datepicker1").datepicker();
+        });
+    </script>
+
+
+    <script>
+        $("#datepicker1").change(function () {
+            var startDate = document.getElementById("datepicker").value;
+            var endDate = document.getElementById("datepicker1").value;
+
+            if ((Date.parse(startDate) > Date.parse(endDate))) {
+                alert("End date should be greater than Start date");
+                document.getElementById("datepicker1").value = "";
+            }
+        });
+    </script>
+}

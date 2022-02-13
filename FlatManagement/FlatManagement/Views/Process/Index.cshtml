@@ -1,0 +1,145 @@
+﻿@model IEnumerable<FlatManagement.Models.ProcessVM>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Transaction List</h1>
+<hr />
+
+<table class="table table-hover" id="flatdatatable">
+    <thead>
+        <tr style="background-color: #f7ecfd">
+            <th>
+                Sl.
+            </th>
+            <th>
+                @Html.Label("Type")
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Amount)
+            </th>
+            <th>
+                @Html.Label("Paid By")
+                @*@Html.DisplayNameFor(model => model.FlatNo)*@
+            </th>
+            <th>
+                @Html.Label("Response Person")
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PaymentStatus)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TransDate)
+            </th>
+
+            <th>
+                @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Supervisor")))
+                {
+                    <a asp-action="AddOrEdit" class="btn btn-outline-success"><i class="far fa fa-plus-square"></i>New</a>
+                }
+                else
+                {
+                    @Html.Label("Action")
+                }
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ int rowNo = 0; }
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @{rowNo++;} @rowNo <span>.</span>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Flow)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Amount)
+            </td>
+            <td>
+                @{
+                    var transCat = item.TransactionCategory;
+
+                    @if (transCat == "1")
+                    {
+                        @Html.Label("Common Fund")
+                    }
+                    else
+                    {
+                        @Html.Label(item.FlatNo)
+                    }
+                }
+                @*@Html.DisplayFor(modelItem => item.FlatNo)*@
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Next_ApprovedByRole)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PaymentStatus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TransDate)
+            </td>
+            <td>
+                @{ 
+                    var app_role = item.Next_ApprovedByRole;
+                    var payment_status = item.PaymentStatus;
+                }
+
+                <a asp-action="ViewDetails" asp-route-id="@item.Id"><i class="fa fa-eye" aria-hidden="true"></i></a>  @*<i class="fas fa-marker fa-lg"></i>*@
+                @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Committee") && (app_role == "Committee")))
+                {
+                    <a class="btn btn-primary" asp-controller="Process" asp-action="CommitteeApproval" asp-route-id="@item.Id">Approve</a>
+                }
+
+
+                @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Supervisor")) && (payment_status != "Paid"))
+                {
+                    <span>|</span>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="text-danger ml-1" onclick="return confirm('Are you sure to delete this record?')"><i class="fas fa-trash-alt fa-lg"></i></a>
+                }
+
+                
+                @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Treasurer")) && (app_role == "Treasurer") && (payment_status != "Paid") && item.Claim != 3)
+                {
+                    <a class="btn btn-primary" asp-controller="Process" asp-action="PaymentGateway" asp-route-id="@item.Id">Payment</a>
+                    if (item.Claim == 2)
+                    {
+                        <span>|</span>
+                        <a class="btn btn-primary" asp-controller="Process" asp-action="ApproveSplit" asp-route-id="@item.Id">Split</a>
+                    }
+                }
+                @{ var ownFlat = ViewBag.OwnflatNo; }
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    
+                    if (item.Claim == 1 && item.ClaimRefId == 0 && (payment_status == "Pending") && ownFlat == item.FlatNo)
+                    {
+                        <a class="btn btn-primary" asp-controller="Process" asp-action="IndividualClaim" asp-route-id="@item.Id">Claim Now</a>
+                    }
+                }
+
+            </td>
+        </tr>
+        }
+
+
+    </tbody>
+</table>
+
+@section Scripts
+{
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.css" />
+
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#flatdatatable").DataTable();
+        }
+        )
+    </script>
+}

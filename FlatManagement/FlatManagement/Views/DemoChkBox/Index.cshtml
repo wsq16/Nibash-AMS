@@ -1,0 +1,33 @@
+﻿@model List<FlatManagement.Models.DemoChkBoxClass>
+@{
+    ViewData["Title"] = "Index";
+}
+
+<form asp-controller="DemoChkBox" asp-action="Index" method="post" class="form-horizontal" role="form">
+    <fieldset class="form-group">
+        <h3>Checkbox List</h3>
+        <legend class="col-sm-3 custom-control-label"></legend>
+        <div class="bx-checkbox checkboxlist col-sm-9">
+            @{
+                for (int i = 0; i < Model.Count(); i++)
+                {
+                    <input asp-for="@Model[i].checkboxAnswer" type="checkbox" />
+                    <label asp-for="@Model[i].CategoryID">@Model[i].CategoryName</label>
+                    <input asp-for="@Model[i].CategoryID" type="hidden" />
+                    <input asp-for="@Model[i].CategoryName" type="hidden" />
+                    <input asp-for="@Model[i].DemoVal" type="hidden" />
+                    <br />
+                }
+            }
+        </div>
+
+        <div class="form-group">
+            <div class="row">
+                <div class="col-xs-12 col-sm-6 col-lg-4">
+                    <input id="Submit1" type="submit" value="submit" />
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+</form>

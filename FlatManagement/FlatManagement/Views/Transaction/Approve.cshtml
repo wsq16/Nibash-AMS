@@ -1,0 +1,219 @@
+﻿@model FlatManagement.Models.TransactionVM
+
+@{
+    ViewData["Title"] = "Approve";
+}
+
+<h4>Create Transaction</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="AddOrEdit" name="myForm" onsubmit="return validateForm()" enctype="multipart/form-data" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="PreparedBy" value="@User.Identity.Name" />
+            @Html.HiddenFor(m => m.TransactionStep)
+            @Html.HiddenFor(m => m.TransactionType)
+            @Html.HiddenFor(m => m.TransactionCategory)
+            @Html.HiddenFor(m => m.Date)
+            @Html.HiddenFor(m => m.Claim)
+
+
+            <div class="form-group">
+                <b><label asp-for="TransactionType" class="control-label"></label></b>
+                <br />
+                @{var tranType = Convert.ToInt32(Model.TransactionType); }
+                @if (tranType == 1)
+                {
+                    @Html.Label("Expenses");
+                }
+                else if (tranType == 2)
+                {
+                    @Html.Label("Receive");
+                }
+                else if (tranType == 3)
+                {
+                    @Html.Label("Advance");
+                }
+
+
+
+                @*@foreach (var c in System.Enum.GetValues(typeof(TransactionTypes)).OfType<TransactionTypes>())
+            {
+                <input type="radio" asp-for="TransactionType" value="@((int)c)" checked="@(c == Model?.TransactionType)" disabled />
+                <label asp-for="TransactionType"><span>@c</span></label>
+            }*@
+            </div>
+
+
+            <div class="form-group">
+                <label asp-for="Purpose" class="control-label font-weight-bold"></label>
+                <input asp-for="Purpose" class="form-control" readonly="readonly" />
+                <span asp-validation-for="Purpose" class="text-danger"></span>
+                @Html.HiddenFor(model => model.FlatNo)
+                @Html.HiddenFor(model => model.FlatOwner)
+                @Html.HiddenFor(model => model.PaidBy)
+                @Html.HiddenFor(model => model.TransactionType)
+                @Html.HiddenFor(model => model.TransactionCategory)
+                @Html.HiddenFor(model => model.ReceiptFile)
+                @Html.HiddenFor(model => model.ReceiptNumber)
+            </div>
+
+            @*@if (!User.IsInRole("FlatOwner"))
+        {
+
+            <div class="form-group">
+                <label asp-for="PaidBy" class="control-label font-weight-bold"></label>
+
+                <div id="myRadioGroup">
+                    <input type="radio" name="TransactionCategory" checked="checked" value="1" /> <span> Common Fund </span>
+                    <input type="radio" name="TransactionCategory" value="2" /><span>Flat Owner </span>
+
+                    <div id="TransactionCategory1" class="desc">
+
+                    </div>
+                    <div id="TransactionCategory2" class="desc" style="display: none;">
+
+                        @Html.DropDownListFor(m => m.FlatNo, new SelectList(ViewBag.FlatNo, "Value", "Text"), "Select Flat")
+                        <br />
+                        Other:<input asp-for="PaidBy" class="form-control" />
+                    </div>
+                </div>
+            </div>
+        }*@
+
+            <div class="form-group">
+                <label asp-for="Amount" class="control-label font-weight-bold"></label>
+                @Html.TextBoxFor(m => m.Amount, new { @maxlength = "15", @placeholder = "Amount", @class = " cAmount right form-control", @readonly = "Readonly" })
+                <span asp-validation-for="Amount" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Date" class="control-label font-weight-bold"></label>
+                <input asp-for="Date" type="text" class="form-control" value="@DateTime.Now.ToString("dd-MM-yyyy")" readonly="readonly" />
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                @if (Model.ReceiptNumber != null)
+                {
+                    <label asp-for="ReceiptNumber" class="control-label font-weight-bold"></label>
+                    @Html.TextBoxFor(m => m.ReceiptNumber, new { @maxlength = "15", @placeholder = "ReceiptNumber", @class = " cReceiptNumber right form-control", @readonly = "Readonly" })
+                }
+            </div>
+
+
+            <div class="form-group col-md-4">
+                @if (Model.ReceiptFile != null)
+                {
+                    @Html.ActionLink("Download", "DownloadFile", new { fileName = Model.ReceiptFile });
+                }
+                else
+                {
+                    @*<span>No file to download!!</span>*@
+                }
+            </div>
+
+
+            @*@if (User.IsInRole("FlatOwner"))
+        {
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label asp-for="ReceiptNumber" class="control-label font-weight-bold"></label>
+                <input asp-for="ReceiptNumber" class="form-control" readonly="readonly" />
+                <span asp-validation-for="ReceiptNumber" class="text-danger"></span>
+            </div>
+
+            <div class="form-group col-md-4">
+                <label asp-for="ReceiptFile" class="control-label"></label>
+                <input type="file" name="FormFile" id="FormFile">
+            </div>
+
+            <div class="form-group col-md-4">
+                @if (Model.ReceiptFile != null)
+                {
+                    @Html.ActionLink("Download", "DownloadFile", new { fileName = Model.ReceiptFile });
+                }
+                else
+                {
+                    <span>No file to download!!</span>
+                }
+            </div>
+
+            </div>
+            }*@
+            <div class="form-row no-print">
+                @if (((Model.TransactionStep == "Submitted")|| (Model.TransactionStep == "COM")) && (User.IsInRole("Committee")))
+                {
+                    <div class="form-group col-md-3">
+                        <input type="submit" value="Approve" name="Approve" class="btn btn-primary btn-block" />
+                    </div>
+
+                    <div class="form-group col-md-3">
+                        <button asp-action="Reject" class="btn btn-primary btn-block">Reject</button>
+                    </div>
+
+                }
+                else if ((Model.TransactionStep == "COM") && (User.IsInRole("Treasurer")))
+                {
+                    <div class="form-group col-md-4">
+                        <a class="btn btn-primary btn-block" href="/Payment/checkout?productNameParam=@Model.TransactionType&priceParam=@Model.Amount&billId=@Model.Id&webAction=Transaction"> <i class="fas fa-dollar-sign"></i> Payment </a>
+                    </div>
+                }
+                else if (User.IsInRole("FlatOwner"))
+                {
+                    <div class="form-group col-md-4">
+                        <input type="submit" value="Claim" class="btn btn-primary btn-block" />
+                    </div>
+                }
+                else if (Model.Id == 0)
+                {
+                    <div class="form-group col-md-4">
+                        <input type="submit" value="Submit" class="btn btn-primary btn-block" />
+                    </div>
+                }
+
+                <div class="form-group col-md-3">
+                    <input type="button" value="Print" onclick="display()" class="btn btn-primary btn-block" />
+                </div>
+                <div class="form-group col-md-3">
+                    <a asp-action="Index" class="btn btn-secondary btn-block"><i class="fa fa-table"></i>Back to List</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            $("#datepicker").datepicker();
+        });
+    </script>
+
+
+    <script>
+        $(document).ready(function () {
+            $("input[name$='TransactionCategory']").click(function () {
+                var test = $(this).val();
+
+                $("div.desc").hide();
+                $("#TransactionCategory" + test).show();
+            });
+        });
+    </script>
+
+
+    <script>
+        function display() {
+            window.print();
+        }
+    </script>
+
+}

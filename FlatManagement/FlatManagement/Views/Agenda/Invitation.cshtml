@@ -1,0 +1,54 @@
+﻿@model List<SelectListItem>
+@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Invitation";
+}
+
+<h4> Invitation </h4>
+<hr />
+
+
+<form method="post" name="myForm" asp-controller="Agenda" asp-action="SendInvitation">
+    <table>
+        <tr>
+            <td>
+                @{ var agenName = ViewBag.AgendaName; }
+                @Html.Label("Agenda Name: ")
+                @ViewBag.AgendaName
+
+                <input type="hidden" name="AgendaId" value="@ViewBag.AgendaId" />
+                <input type="hidden" name="AgendaName" value="@ViewBag.AgendaName" />
+                <input type="hidden" name="AgendaDetails" value="@ViewBag.AgendaDetails" />
+                <input type="hidden" name="AgendaAttachment" value="@ViewBag.AgendaAttachment" />
+            </td>
+            <td>Date: @String.Format("{0:dd/MM/yyyy}", ViewBag.AgendaDate) </td>
+        </tr>
+        <tr><td colspan="2">Details: @ViewBag.AgendaDetails</td></tr>
+        <tr><td colspan="2">AgendaAttachment: @ViewBag.AgendaAttachment</td></tr>
+
+        <tr><td colspan="1"><b>Send Notification To:</b></td></tr>
+        @foreach (var flatOwner in Model)
+        {
+            <tr>
+                <td>
+                    <input id="@flatOwner.Value" type="checkbox" name="flatOwnerList" value="@flatOwner.Value" checked="@flatOwner.Selected" />
+                </td>
+                <td>
+                    <label for="@flatOwner.Value">@flatOwner.Text</label>
+                </td>
+            </tr>
+        }
+    </table>
+
+    <table>
+        <tr>
+            <td><input type="submit" id="btnInvite" name="Invite" value="Invite" /></td>
+            <td><a asp-action="Index" asp-controller="Home" class="btn btn-secondary btn-block"><i class="fa fa-table"></i>Back to List</a></td>
+        </tr>
+    </table>
+</form>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

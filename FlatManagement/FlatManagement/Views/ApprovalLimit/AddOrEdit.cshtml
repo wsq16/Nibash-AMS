@@ -1,0 +1,70 @@
+﻿@model FlatManagement.Models.ApprovalLimitVM
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+
+<h4>Create Approval Limit</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="AddOrEdit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="FlowTypes" class="control-label"></label>
+                    <select asp-for="FlowTypes" asp-items="Html.GetEnumSelectList<FlowType>()" class="form-control"></select>
+                    <span asp-validation-for="RoleName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label asp-for="RoleName" class="control-label"></label>
+                    @Html.DropDownListFor(m => m.RoleName, new SelectList(ViewBag.UserRoleList, "Value", "Text"), "Select Role", new { @class = "dHSCode form-control" })
+                    <span asp-validation-for="RoleName" class="text-danger"></span>
+                </div>
+                
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label asp-for="AmountLimit_MIN" class="control-label"></label>
+                    <input asp-for="AmountLimit_MIN" class="form-control" />
+                    <span asp-validation-for="AmountLimit_MIN" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-4">
+                    <label asp-for="AmountLimit_MAX" class="control-label"></label>
+                    <input asp-for="AmountLimit_MAX" class="form-control" />
+                    <span asp-validation-for="AmountLimit_MAX" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-4">
+                    <label asp-for="isActive" class="control-label"></label>
+                    @Html.CheckBoxFor(model => model.isActive, new { @class = "cisActive" })
+                </div>
+            </div>
+
+
+
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <input type="submit" value="Submit" class="btn btn-primary btn-block" />
+                </div>
+                <div class="form-group col-md-6">
+                    <a asp-action="Index" class="btn btn-secondary btn-block"><i class="fa fa-table"></i>Back to List</a>
+                </div>
+            </div>
+
+
+
+
+        </form>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,121 @@
+﻿@model IEnumerable<FlatManagement.Models.TransactionVM>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Split List</h1>
+<hr />
+
+<table class="table table-hover" id="flatdatatable">
+    <thead>
+        <tr>
+            <th>
+                Sl.
+            </th>
+            <th>
+                @Html.Label("Type")
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Amount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Date)
+            </th>
+            <th>
+                @Html.Label("Flat")
+            </th>
+            <th>Payment</th>
+            <th>
+               
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ int rowNo = 0; }
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @{rowNo++;} @rowNo
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TransactionType)<span>(</span>
+                    @if (item.TransactionCategory == "1")
+                    {
+                        @Html.Label("Com. Fund")
+                    }
+                    else if (item.TransactionCategory == "2")
+                    {
+                        @Html.Label("Individual")
+                    }
+                    <span>)</span>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Amount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    @if (item.FlatNo != null)
+                    {
+                        @Html.DisplayFor(modelItem => item.FlatNo);
+                    }
+                    else
+                    {
+                        <span>-</span>
+                    }
+                </td>
+
+                <td>
+
+                    @if (item.Claim == 0)
+                    {
+                        @Html.Label("Initial")
+                    }
+                    else if (item.Claim == 1)
+                    {
+                        @Html.Label("In-Progress")
+                    }
+                    else if (item.Claim == 2)
+                    {
+                        @Html.Label("Claimed")
+                    }
+                    else if (item.Claim == 3)
+                    {
+                        @Html.Label("Paid")
+                    }
+                    else if (item.Claim == 4)
+                    {
+                        @Html.Label("Request for split")
+                    }
+
+
+                </td>
+                <td>
+                    @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Supervisor")))
+                    {
+                        <a class="btn btn-primary" asp-action="ApproveSplit" asp-route-id="@item.Id">Details</a>
+                    }
+                </td>
+            </tr>
+        }
+
+
+    </tbody>
+</table>
+
+@section Scripts
+{
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.css" />
+
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#flatdatatable").DataTable();
+        }
+        )
+    </script>
+}

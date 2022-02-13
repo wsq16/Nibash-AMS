@@ -1,0 +1,112 @@
+﻿@model FlatManagement.Models.ProcessVM
+
+@{
+    ViewData["Title"] = "Claim Request";
+}
+
+<h4>Claim</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="IndividualClaim" name="myForm" onsubmit="return validateForm()" enctype="multipart/form-data" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            @Html.HiddenFor(m => m.Id)
+            @Html.HiddenFor(m => m.Flow)
+            @Html.HiddenFor(m => m.curr_ApprovedByRole)
+            @Html.HiddenFor(m => m.Next_ApprovedByRole)
+            @Html.HiddenFor(m => m.Purpose)
+            @Html.HiddenFor(m => m.PaidBy)
+            @Html.HiddenFor(m => m.Amount)
+            @Html.HiddenFor(m => m.TransDate)
+            @Html.HiddenFor(m => m.FlatNo)
+            @Html.HiddenFor(m => m.FlatOwner)
+            @Html.HiddenFor(m => m.PaymentStatus)
+            @Html.HiddenFor(m => m.DeleteFlag)
+            @Html.HiddenFor(m => m.CurrentStatus)
+            @Html.HiddenFor(m => m.TransactionCategory)
+            @Html.HiddenFor(m => m.Claim)
+            @Html.HiddenFor(m => m.SplitAmt)
+
+
+            @*<div class="form-group">
+                <div class="alert alert-danger">
+                    @ViewBag.ErrorMessage
+                </div>
+            </div>*@
+
+
+            <div class="form-group">
+                <b><label asp-for="Flow" class="control-label"></label></b>
+                <br />
+                @Html.DisplayFor(m => m.Flow)
+            </div>
+
+
+            <div class="form-group">
+                <label asp-for="FlatNo" class="control-label font-weight-bold"></label>
+                <input asp-for="FlatNo" class="form-control" readonly="readonly" />
+            </div>
+            <div class="form-group">
+                <label asp-for="FlatOwner" class="control-label font-weight-bold"></label>
+                <input asp-for="FlatOwner" class="form-control" readonly="readonly" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Purpose" class="control-label font-weight-bold"></label>
+                <input asp-for="Purpose" class="form-control" readonly="readonly" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Amount" class="control-label font-weight-bold"></label>
+                @Html.TextBoxFor(m => m.Amount, new { @maxlength = "15", @placeholder = "Amount", @class = " cAmount right form-control", @readonly = "Readonly" })
+            </div>
+
+            <div class="form-group">
+                <label asp-for="TransDate" class="control-label font-weight-bold"></label>
+                <input asp-for="TransDate" type="text" class="form-control" readonly="readonly" />
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="ReceiptNumber" class="control-label font-weight-bold"></label>
+                    <input asp-for="ReceiptNumber" class="form-control" />
+                    <span asp-validation-for="ReceiptNumber" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label asp-for="ReceiptFile" class="control-label"></label>
+                    <input type="file" name="FormFile" id="FormFile">
+                </div>
+            </div>
+
+
+
+            <div class="form-row no-print">
+                <div class="form-group col-md-4">
+                    <input type="submit" value="Claim Now" class="btn btn-primary btn-block" />
+                </div>
+
+                <div class="form-group col-md-4">
+                    <input type="button" value="Print" onclick="display()" class="btn btn-primary btn-block" />
+                </div>
+
+                <div class="form-group col-md-4">
+                    <a asp-action="Index" class="btn btn-secondary btn-block"><i class="fa fa-table"></i>Back to List</a>
+                </div>
+            </div>
+
+</form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        function display() {
+            window.print();
+        }
+    </script>
+
+}

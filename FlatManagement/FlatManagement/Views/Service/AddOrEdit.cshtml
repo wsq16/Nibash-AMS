@@ -1,0 +1,263 @@
+﻿@model FlatManagement.Models.ServiceVM
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+
+<h4>Create Service</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="AddOrEdit" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input type="hidden" asp-for="PrepairedBy" value="@User.Identity.Name" />
+            @Html.HiddenFor(m => m.Id)
+            @Html.HiddenFor(m => m.FileUpload1)
+            @Html.HiddenFor(m => m.FileUpload2)
+            @Html.HiddenFor(m => m.FileUpload3)
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="Type">Service Name</label><span>*</span>
+                    <input asp-for="Type" class="form-control" />
+                    <span asp-validation-for="Type" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="Amount" class="control-label"></label>
+                    <input asp-for="Amount" class="form-control" />
+                    <span asp-validation-for="Amount" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="StartDate" class="control-label"></label>
+                    <input asp-for="StartDate" placeholder="select date" id="StartDate" type="text" class="form-control" /> @*value="@DateTime.Now.ToString("MM-dd-yyyy")"*@
+                    <span asp-validation-for="StartDate" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="EndDate" class="control-label"></label>
+                    <input asp-for="EndDate" placeholder="select date" id="EndDate" type="text" class="form-control" /> @*value="@DateTime.Now.ToString("MM-dd-yyyy")"*@
+                    <span asp-validation-for="EndDate" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label asp-for="Details" class="control-label"></label><span>*</span>
+                    @Html.TextAreaFor(model => model.Details, new { @placeholder = "Details", @class = "cDetails form-control" })
+                    <span asp-validation-for="Details" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-4">
+                    <label asp-for="BillType" class="control-label"></label><span>*</span>
+                    @Html.DropDownListFor(m => m.BillType, new SelectList(ViewBag.billType, "Value", "Text"), "Select Bill Type", new { @class = "form-control" })
+                    <span asp-validation-for="BillType" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-4">
+                    <label asp-for="isActive">Status</label>
+                    @*@Html.CheckBoxFor(m => m.isActive)*@
+                    <select asp-for="Status" class="form-control">
+                        <option value="">Select Status</option>
+                        <option value="Open">Open</option>
+                        <option value="Hold">Hold</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+
+                    @*@if (Model.Operation == "update")
+        {
+            <div class="col-md-2">
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.IsActive)
+                </div>
+                <div class="editor-field">
+                    @Html.CheckBoxFor(model => model.IsActive, new { @class = " form-control " })
+                    @Html.ValidationMessageFor(model => model.IsActive)
+                </div>
+            </div>
+        }
+        else
+        {
+            @Html.HiddenFor(model => model.IsActive)
+        }*@
+
+
+                </div>
+            </div>
+
+            <div class="form-row">
+                @if (Model.FileUpload1 == null || Model.FileUpload1 == ""|| Model.FileUpload2 == null || Model.FileUpload3 == "")
+                {
+                    <div class="form-group col-md-12">
+                        @Html.Label("Files")
+                        <input class="form-control" name="files" id="filesId" multiple="multiple" type="file" />
+                    </div>
+                }
+                </div>
+            <div class="form-row">
+                <div class="form-group col-md-12">
+                    @{ var str_Files = ""; }
+                    <div id="fileContent" style="display:block;" class="form-group col-md-6">
+                        @if (Model.FileUpload1 != null && Model.FileUpload1 != "")
+                        {
+                            str_Files += Model.FileUpload1 + "-";
+
+                            <div class="col-md-3">
+                                @Html.LabelFor(model => model.FileUpload1, new { @class = "FileUpload" })
+                                <span>@Model.FileUpload1</span>
+                                <div class="col-md-3">
+                                    <a class="" target="_blank" href="~/DocFiles/@Model.FileUpload1">
+                                        <img class="attachment" src="~/assets/icons/files.png" width="30" alt="File" title="File" />
+                                    </a>
+                                </div>
+                            </div>
+                        }
+
+                        @if (Model.FileUpload2 != null && Model.FileUpload2 != "")
+                        {
+                            str_Files += Model.FileUpload2 + "-";
+
+                            <div class="col-md-3">
+                                @Html.LabelFor(model => model.FileUpload2, new { @class = "FileUpload" })
+                                <span>@Model.FileUpload2</span>
+                                <div class="col-md-3">
+                                    <a class="" target="_blank" href="~/DocFiles/@Model.FileUpload2">
+                                        <img class="attachment" src="~/assets/icons/files.png" width="30" alt="File" title="File" />
+                                    </a>
+                                </div>
+                            </div>
+                        }
+
+                        @if (Model.FileUpload3 != null && Model.FileUpload3 != "")
+                        {
+                            str_Files += Model.FileUpload3 + "-";
+
+                            <div class="col-md-3">
+                                @Html.LabelFor(model => model.FileUpload3, new { @class = "FileUpload" })
+                                <span>@Model.FileUpload3</span>
+                                <div class="col-md-3">
+                                    <a class="" target="_blank" href="~/DocFiles/@Model.FileUpload3">
+                                        <img class="attachment" src="~/assets/icons/files.png" width="30" alt="File" title="File" />
+                                    </a>
+                                </div>
+                            </div>
+                        }
+
+                        @if (str_Files != null && str_Files != "")
+                        {
+
+                            //if (Model.FileUpload1 != null)
+                            //{
+                            //    str_Files += Model.FileUpload1 + "-";
+                            //}
+                            //if (Model.FileUpload2 != null)
+                            //{
+                            //    str_Files += Model.FileUpload2 + "-";
+                            //}
+                            //if (Model.FileUpload3 != null)
+                            //{
+                            //    str_Files += Model.FileUpload3 + "-";
+                            //}
+
+                            <div class="col-md-4">
+                                <input type="button" value="Delete Files" class="btn btn-danger btn-block" onclick="FileDeleteThis(this);" data-id="@Model.Id" data-table="501" data-field="Attachment" data-url="@str_Files" />
+                                @*<span onclick="FileDeleteThis(this);" data-id="@Model.Id" data-table="501" data-field="Attachment" data-url="@str_Files">
+                            <img class="attachment" src="~/assets/img/document_delete.png" width="30" alt="File" title="File" />
+                        </span>*@
+                            </div>
+                        }
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <input type="submit" value="Submit" class="btn btn-primary btn-block" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <a asp-action="Index" class="btn btn-secondary btn-block"><i class="fa fa-table"></i>Back to List</a>
+                    </div>
+                </div>
+
+</form>
+</div>
+</div>
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            /* format: 'dd/mm/yyyy'*/
+            $("#StartDate").datepicker();
+            $("#EndDate").datepicker();
+        });
+    </script>
+
+    <script>
+        $("#EndDate").change(function () {
+            var startDate = document.getElementById("StartDate").value;
+            var endDate = document.getElementById("EndDate").value;
+
+            if ((Date.parse(startDate) > Date.parse(endDate))) {
+                alert("End date should be greater than Start date");
+                document.getElementById("EndDate").value = "";
+            }
+        });
+    </script>
+
+
+    <script>
+
+        function FileDeleteThis(sender) {
+            if (confirm("Do you want to delete the file!!")) {
+                var x = document.getElementById('fileExist');
+                var url = "/Service/FileDelete?filepath=" + $(sender).attr('data-url') + "&table=" + $(sender).attr('data-table') + "&field=" + $(sender).attr('data-field') + "&id=" + $(sender).attr('data-id');
+                $.ajax({
+                    type: "GET",
+                    url: url,
+                    error: function (xhr, status, error) {
+                        //"test"
+                    },
+                    success: function (response) {
+                        /* if (response) {*/
+                        document.getElementById('fileContent').style.display = "none";
+                       
+                    },
+                    failure: function (response) {
+                        document.getElementById('fileContent').style.display = "none";
+                    },
+                    error: function (response) {
+                        document.getElementById('fileContent').style.display = "none";
+                    }
+                });
+            } else {
+                
+            }
+        }
+
+
+        
+    </script>
+
+
+<script>
+    $('input#filesId').change(function () {
+        var files = $(this)[0].files;
+        if (files.length > 3) {
+            alert("You can select max 3 files.");
+            return false;
+        } else {
+            /*alert("correct, you have selected less than 10 files");*/
+        }
+    });
+</script>
+
+}

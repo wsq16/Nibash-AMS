@@ -1,0 +1,177 @@
+﻿@model IEnumerable<FlatManagement.Models.BillVM>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Bill List</h1>
+<hr />
+<h1>@ViewBag.SuccessInfo</h1>
+
+<table align="center">
+    <tr>
+        <td>Status</td>
+        <td>
+            <select id="ddlBillStatus">
+                <option value="All">All</option>
+                <option value="Initial">Initial</option>
+                <option value="Paid">Paid</option>
+            </select>
+        </td>
+        <td><a class="btn btn-primary" onclick="GoSearch()"> <i class="fa fa-search"></i>Search </a></td>
+    </tr>
+</table>
+@{ var ownFlat = ViewBag.OwnFlatNo; }
+<table class="table table-hover" id="billdatatable">
+    <thead>
+        <tr style="background-color: #f7ecfd">
+            <th>
+                Sl.
+            </th>
+            <th>Bill ID</th>
+            <th>
+                @Html.DisplayNameFor(model => model.BillType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Amount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BillStatus)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BillFor)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FlatNo)
+            </th>
+            <th>
+                @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Supervisor")))
+                {
+                    <a asp-action="AddOrEdit" class="btn btn-outline-success"><i class="far fa fa-plus-square"></i>Bill</a>
+                    <a class="btn btn-primary" onclick="GoPayment()"> <i class="far fa fa-plus-square"></i> Multiple Payment </a>
+                }
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ int rowNo = 0; }
+        @foreach (var item in Model)
+        {
+
+
+            <tr>
+                <td>
+                    @{rowNo++;} @rowNo
+                    <span>|</span>
+                    @if (item.BillStatus == "Initial")
+                    {
+                        <input id="@item.Id" type="checkbox" name="billIds" value="@item.Id" onclick="updatemark()" />
+                        <input type="hidden" name="_@item.Id" id="_@item.Id" value="@item.Amount" />
+                    }
+                    else
+                    {
+                        <input type="checkbox" disabled />
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BillType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Amount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BillStatus)
+                </td>
+                
+                <td>
+                    @Html.DisplayFor(modelItem => item.BillFor)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FlatNo)
+                </td>
+                <td>
+                    <a asp-action="AddOrEdit" asp-route-id="@item.Id"><i class="fas fa-marker fa-lg"></i></a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="text-danger ml-1" onclick="return confirm('Are you sure to delete this record?')"><i class="fas fa-trash-alt fa-lg"></i></a>|
+
+                    @if (item.BillStatus == "Initial")
+                    {
+                        if (ownFlat != item.BillFor)
+                        {
+                            <a class="btn btn-primary" href="/Payment/checkout?productNameParam=@item.BillType&priceParam=@item.Amount&billId=@item.Id&webAction=Bill"> <i class="fas fa-dollar-sign"></i> Payment </a>
+                        }
+                    }
+                </td>
+            </tr>
+        }
+
+
+    </tbody>
+</table>
+<input type="hidden" id="BIdStr" name="BIdStr" value="">
+<input type="hidden" id="BAmountStr" name="BAmountStr" value="0">
+@section Scripts
+{
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.css" />
+
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#billdatatable").DataTable();
+        }
+        )
+    </script>
+
+    <script>
+        function updatemark(arg) {
+            var abc = ""
+            $('#BAmountStr').val(0);
+            //Iterating the collection of checkboxes which checked marked
+            $('input[type=checkbox]').each(function () {
+                if (this.checked) {
+                    var elemA = document.getElementById('_' + $(this).val()).value;
+                    getAmount(elemA);
+                    abc = abc + $(this).val() + ","
+                    $('#BIdStr').val(abc);
+                }
+            });
+
+        }
+        function getAmount(bAmount) {
+            var v1 = document.getElementById("BAmountStr").value;
+            var v2 = parseFloat(v1);
+
+            var vTotalFOB = v2 + parseFloat(bAmount);
+            $('#BAmountStr').val(vTotalFOB);
+        }
+    </script>
+
+
+
+    <script type="text/javascript">
+        function GoPayment() {
+            var BIdStr = document.getElementById("BIdStr").value;
+            var billIdVar = BIdStr.substring(0, BIdStr.length - 1);
+            var BAmountStr = document.getElementById("BAmountStr").value;
+            if (billIdVar.length > 0) {
+                window.location.href = "/Payment/checkout?productNameParam=Type&priceParam=" + BAmountStr + "&billId=" + billIdVar + "&webAction=Bill";
+            } else {
+                alert("Please select bill(s).");
+            }
+
+
+        }
+    </script>
+
+    <script type="text/javascript">
+        function GoSearch() {
+            var x = document.getElementById("ddlBillStatus").value;
+            window.location.href = "/Bill/Index?billStatus=" + x;
+        }
+    </script>
+    @*"+ "&trn=0&billId=0*@
+}

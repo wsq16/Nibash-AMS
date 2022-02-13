@@ -1,0 +1,343 @@
+﻿@model FlatManagement.Models.FlatConfigVM
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<style>
+    p.dotted {
+        border-style: dotted;
+        font-size: 25px;
+        /*border: 2px solid red;
+        border-radius: 25px;*/
+        border-radius: 25px;
+        background: #73AD21;
+        padding: 10px;
+        width: 150px;
+        height: 50px;
+    }
+
+    p.dashed {
+        border-style: dashed;
+    }
+
+    p.solid {
+        border-style: solid;
+    }
+
+    p.double {
+        border-style: double;
+    }
+
+    p.groove {
+        border-style: groove;
+    }
+
+    p.ridge {
+        border-style: ridge;
+    }
+
+    p.inset {
+        border-style: inset;
+    }
+
+    p.outset {
+        border-style: outset;
+    }
+
+    p.none {
+        border-style: none;
+    }
+
+    p.hidden {
+        border-style: hidden;
+    }
+
+    p.mix {
+        border-style: dotted dashed solid double;
+    }
+</style>
+
+
+<script type="text/javascript">
+    function valueChanged() {
+        if ($('.coupon_question').is(":checked")) {
+            $(".answer").show();
+            $(".question").hide();
+        }
+        else {
+            $(".answer").hide();
+            $(".question").show();
+        }
+    }
+</script>
+
+
+<h4>Create Flat</h4>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="AddOrEdit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                @Html.Label("Wing")
+                <input class="coupon_question" type="checkbox" name="coupon_question" value="1" checked onchange="valueChanged()" />
+            </div>
+
+
+            <fieldset class="answer">
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        @Html.Label("Total Floor")
+                        @Html.TextBoxFor(m => m.TotalWing, new { placeholder = "Total Floor", @class = "cTotalWing control-label col-md-6 form-control", @style = "float: right; text-align: right;" })
+                        @Html.ValidationMessageFor(m => m.TotalWing, "", new { @class = "error" })
+                    </div>
+                    <div class="form-group col-md-6">
+                        @Html.Label("Wing Per Floor")
+                        @Html.TextBoxFor(m => m.WingPerFloor, new { placeholder = "Wing Per Floor", @class = "cWingPerFloor control-label col-md-6", @style = "float: right; text-align: right;" })
+                        @Html.ValidationMessageFor(m => m.WingPerFloor, "", new { @class = "error" })
+                    </div>
+                </div>
+                <div class="form-row">
+
+                    <div class="form-group col-md-6">
+                        @Html.Label("Flat Per Wing")
+                        @Html.TextBoxFor(m => m.FlatPerWing, new { placeholder = "Flat Per Wing", @class = "cFlatPerWing control-label col-md-6", @style = "float: right; text-align: right;" })
+                        @Html.ValidationMessageFor(m => m.FlatPerWing, "", new { @class = "error" })
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        @Html.Label("Wing Style")
+                        @Html.DropDownListFor(x => x.Wing, new List<SelectListItem>
+                        {
+                                            new SelectListItem() {Text = "A,B,C", Value="1"},
+                                            new SelectListItem() {Text = "1,2,3", Value="2"}
+                        })
+                        @Html.ValidationMessageFor(m => m.Wing, "", new { @class = "error" })
+                    </div>
+
+                </div>
+            </fieldset>
+            <fieldset class="question" style="display: none">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        @Html.Label("Total Floor")
+                        @Html.TextBoxFor(m => m.TotalFlat, new { placeholder = "Total Floor", @class = "cTotalFlat control-label col-md-6", @style = "float: right; text-align: right;" })
+                        @Html.ValidationMessageFor(m => m.TotalFlat, "", new { @class = "error" })
+                    </div>
+                    <div class="form-group col-md-6">
+                        @Html.Label("Flat Per Floor")
+                        @Html.TextBoxFor(m => m.FlatPerFloor, new { placeholder = "Flat Per Floor", @class = "cFlatPerFloor control-label col-md-6", @style = "float: right; text-align: right;" })
+                        @Html.ValidationMessageFor(m => m.FlatPerFloor, "", new { @class = "error" })
+
+                    </div>
+                </div>
+            </fieldset>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    @Html.Label("Start From")
+                    @Html.DropDownListFor(x => x.FlatStartFrom, new List<SelectListItem>
+                    {
+                            new SelectListItem() {Text = "Ground Floor", Value="0"},
+                            new SelectListItem() {Text = "First Floor", Value="1"},
+                            new SelectListItem() {Text = "Second Floor", Value="2"}
+                    })
+                    @Html.ValidationMessageFor(m => m.FlatStartFrom, "", new { @class = "error" })
+                </div>
+
+
+                <div class="form-group col-md-6">
+                    @Html.Label("Ground Floor Start")
+                    @Html.DropDownListFor(x => x.GroundFloorStart, new List<SelectListItem>
+                    {
+                                        new SelectListItem() {Text = "0", Value="0"},
+                                        new SelectListItem() {Text = "1", Value="1"}
+                    })
+                    @Html.ValidationMessageFor(m => m.GroundFloorStart, "", new { @class = "error" })
+                </div>
+            </div>
+
+            <div class="form-row">
+
+                <div class="form-group col-md-6">
+                    @Html.Label("Flat Style")
+
+                    @Html.DropDownListFor(x => x.FlatNo, new List<SelectListItem>
+                    {
+                            new SelectListItem() {Text = "A,B,C", Value="1"},
+                            new SelectListItem() {Text = "1,2,3", Value="2"}
+                    })
+                    @Html.ValidationMessageFor(m => m.FlatNo, "", new { @class = "error" })
+
+                </div>
+
+
+                <div class="form-group col-md-6">
+                    @Html.Label("Sequence")
+
+                    @Html.DropDownListFor(x => x.Sequence, new List<SelectListItem>
+                    {
+                            new SelectListItem() {Text = "Wing, Floor, FlatNo", Value="1"},
+                            new SelectListItem() {Text = "FlatNo, Floor, Wing", Value="2"},
+                            new SelectListItem() {Text = "FlatNo, Wing, Floor", Value="3"}
+                    })
+                    @Html.ValidationMessageFor(m => m.Sequence, "", new { @class = "error" })
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    @Html.Label("Delimeter")
+
+                    @Html.DropDownListFor(x => x.Delimeter, new List<SelectListItem>
+                    {
+                            new SelectListItem() {Text = "Please Select Delimeter", Value=" "},
+                            new SelectListItem() {Text = "-", Value="-"},
+                            new SelectListItem() {Text = "_", Value="_"},
+                            new SelectListItem() {Text = "/", Value="/"}
+                    })
+
+                    @Html.ValidationMessageFor(m => m.Delimeter, "", new { @class = "error" })
+                </div>
+                <div class="form-group col-md-6">
+
+                    <p id="previewId" class="dotted">
+                        Preview
+                    </p>
+
+                </div>
+            </div>
+
+
+
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <input type="submit" value="Submit" class="btn btn-primary btn-block" />
+                </div>
+                <div class="form-group col-md-6">
+                    <a asp-action="Index" class="btn btn-secondary btn-block"><i class="fa fa-table"></i>Back to List</a>
+                </div>
+            </div>
+
+
+        </form>
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+
+
+        $('.cTotalWing').on('change', function () {
+            document.getElementById("previewId").innerHTML = GetFlatNum();
+        });
+        $('.cWingPerFloor').on('change', function () {
+            document.getElementById("previewId").innerHTML = GetFlatNum();
+        });
+        $('.cFlatPerWing').on('change', function () {
+            document.getElementById("previewId").innerHTML = GetFlatNum();
+        });
+
+        $('#Wing').on('change', function () {
+            document.getElementById("previewId").innerHTML = GetFlatNum();
+        });
+
+        $('#TotalFlat').on('change', function () {
+            document.getElementById("previewId").innerHTML = GetFlatNum();
+        });
+        $('#FlatPerFloor').on('change', function () {
+            document.getElementById("previewId").innerHTML = GetFlatNum();
+        });
+        $('#FlatStartFrom').on('change', function () {
+            document.getElementById("previewId").innerHTML = GetFlatNum();
+        });
+        $('#GroundFloorStart').on('change', function () {
+            document.getElementById("previewId").innerHTML = GetFlatNum();
+        });
+        $('#FlatNo').on('change', function () {
+            document.getElementById("previewId").innerHTML = GetFlatNum();
+        });
+        $('#Sequence').on('change', function () {
+            document.getElementById("previewId").innerHTML = GetFlatNum();
+        });
+        $('#Delimeter').on('change', function () {
+            document.getElementById("previewId").innerHTML = GetFlatNum();
+        });
+
+        function commonCall() {
+            document.getElementById("previewId").innerHTML = GetFlatNum();
+        }
+
+        function GetFlatNum() {
+            // From the other examples
+            var previewValue = "";
+            var previewWingVal = "";
+            var previewFlatStyle = "";
+
+            var FlatStartFrom = document.getElementById("FlatStartFrom").value;
+            var GroundFloorStart = document.getElementById("GroundFloorStart").value;
+            var FlatStyle = parseInt(document.getElementById("FlatNo").value);
+            var Sequence = parseInt(document.getElementById("Sequence").value);
+            var Delimeter = document.getElementById("Delimeter").value;
+            var flatStart = parseInt(FlatStartFrom) + parseInt(GroundFloorStart);
+
+            previewFlatStyle = FlatStyle == 1 ? 'A' : '1';
+
+            //var cTotalFlat = parseInt(document.getElementById("cTotalFlat").value);
+            //var cFlatPerFloor = parseInt(document.getElementById("cFlatPerFloor").value);
+
+            /* alert("Catch1");*/
+            var wingVar = document.querySelector('.coupon_question').checked;
+
+            var caseOneWing = "";
+            var caseTwoWing = "";
+
+            if (wingVar == true) {
+                //var cTotalWing = document.getElementById("cTotalWing").value;
+                //var cWingPerFloor = document.getElementById("cWingPerFloor").value;
+                //var cFlatPerWing = document.getElementById("cFlatPerWing").value;
+                var WingVar = parseInt(document.getElementById("Wing").value);
+                previewWingVal = WingVar == 1 ? 'A' : '1';
+
+                caseOneWing = previewWingVal + Delimeter;
+                caseTwoWing = Delimeter + previewWingVal;
+
+
+            } else if (wingVar == false) {
+                /*alert("False");*/
+            }
+
+            switch (Sequence) {
+                case 1:
+                    previewValue = caseOneWing + flatStart + Delimeter + previewFlatStyle;
+                    //previewValue = previewWingVal + Delimeter + flatStart + Delimeter + previewFlatStyle;
+                    break;
+                case 2:
+                    previewValue = previewFlatStyle + Delimeter + flatStart + caseTwoWing;
+                    //previewValue = previewFlatStyle + Delimeter + flatStart + Delimeter + previewWingVal;
+                    break;
+                case 3:
+                    previewValue = previewFlatStyle + Delimeter + caseOneWing + flatStart;
+                    //previewValue = previewFlatStyle + Delimeter + previewWingVal + Delimeter + flatStart;
+                    break;
+                default:
+                    previewValue = previewWingVal + Delimeter + flatStart + Delimeter + previewFlatStyle;
+                    break;
+            }
+
+            return previewValue; // document.getElementById("previewId").innerHTML = previewValue;
+
+        }
+
+    </script>
+
+}

@@ -1,0 +1,119 @@
+﻿@model FlatManagement.Models.MaintenanceVM
+
+@{
+    ViewData["Title"] = "Create";
+}
+@{
+    if (Model.Id > 0)
+    {
+        ViewBag.Title = "Edit";
+    }
+    else
+    {
+        ViewBag.Title = "Create";
+    }
+}
+    <h4>Create Maintenance</h4>
+
+    <script>
+        $(document).ready(function () {
+            $("input[name$='categoryRadio']").click(function () {
+                var test = $(this).val();
+
+                $("div.desc").hide();
+                $("#categoryRadio" + test).show();
+            });
+        });
+    </script>
+
+
+
+    <hr />
+    <div class="row">
+        <div class="col-md-12">
+            <form asp-action="AddOrEdit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                @Html.Hidden("entry_by", User.Identity.Name)
+                @Html.Hidden("entry_date", DateTime.Now)
+                @Html.Hidden("Maintenance_date", DateTime.Now)
+
+                @*@if (Model.Operation == "update")
+        {
+
+        }
+        else
+        {
+            @Html.HiddenFor(model => model.IsActive)
+        }*@
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        @Html.Label("Type")
+                        <div id="myRadioGroup">
+
+                            <input type="radio" name="categoryRadio" value="1" />Ad-Hoc &nbsp;
+                            <input type="radio" name="categoryRadio" value="2" checked="checked" />Schedule
+
+                            <div id="categoryRadio1" class="desc" style="display: none;">
+                                @Html.TextBox("contractText", null, new { @class = "form-control", @placeholder = "Contract Name" })
+                            </div>
+                            <div id="categoryRadio2" class="desc">
+                                <label asp-for="contract" class="control-label"></label>
+                                @Html.DropDownListFor(m => m.contract, new SelectList(ViewBag.contractsList, "Value", "Text"), "Select contract", new { @class = "form-control" })
+                                @*<select asp-for="contract" name="products" class="form-control" asp-items="@ViewBag.contractsList"></select>*@
+                                <span asp-validation-for="contract" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label asp-for="maintenance_type" class="control-label"></label>
+                        @Html.DropDownListFor(m => m.maintenance_type, new SelectList(ViewBag.maintenanceTypeList, "Value", "Text"), "Select Maintenance Type", new { @class = "form-control" })
+                        <span asp-validation-for="maintenance_type" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label asp-for="amount" class="control-label"></label>
+                        @Html.TextBox("amount", null, new { @class = "form-control", @placeholder = "Amount" })
+                        <span asp-validation-for="amount" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label asp-for="MaintenanceDate" class="control-label"></label>
+                        @Html.TextBoxFor(m => m.MaintenanceDate, "{0:dd-MM-yyyy}", new { @class = "cCollectionDate form-control", placeholder = "Select Date", id = "datepicker" })
+                        <span asp-validation-for="MaintenanceDate" class="text-danger"></span>
+                    </div>
+                </div>
+
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <input type="submit" value="Submit" class="btn btn-primary btn-block" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <a asp-action="Index" class="btn btn-secondary btn-block"><i class="fa fa-table"></i>Back to List</a>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+
+
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <script>
+            $(function () {
+                $("#datepicker").datepicker();
+            });
+        </script>
+    }

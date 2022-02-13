@@ -1,0 +1,38 @@
+﻿@model FlatManagement.Models.PaymentGatewayVM
+
+@{
+    ViewData["Title"] = "Payment Gateway";
+}
+
+
+@{
+    ViewBag.Title = "Payments";
+}
+
+<div ng-controller="paymentCtrl">
+    <h2>Payment</h2>
+
+    <div class="row">
+        @Html.ActionLink("Go back", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+
+        <form id="payment_gw" name="payment_gw" method="POST" action="https://securepay.sslcommerz.com/gwprocess/testbox/v3/process.php">
+            <input type="hidden" name="total_amount" value="1500" />
+            <input type="hidden" name="store_id" value="test_storeID" />
+            <input type="hidden" name="tran_id" value="xxxx" />
+            <input type="hidden" name="success_url" value="http://localhost:15135/Home" />
+            <input type="hidden" name="fail_url" value="http://localhost:15135/Home" />
+            <input type="hidden" name="cancel_url" value="http://localhost:15135/Home" />
+            <input type="hidden" name="version" value="2.00" />
+
+            <div class="clearfix"></div>
+            <div class="col-md-12">
+                @ViewBag.Status
+                <h5>Amount to Pay: 1500</h5>
+                <br />
+                <!-- SUBMIT REQUEST !-->
+                <button type="submit" class=" btn success"><i class="fa fa-calendar-check-o"></i> Pay Now</button>
+            </div>
+            <div class="clearfix"></div>
+        </form>
+    </div>
+</div>
