@@ -23,5 +23,8 @@ namespace FlatManagement.Models
         [Column(TypeName = "nvarchar(250)")]
         [Required(ErrorMessage = "This field is required.")]
         public string Remarks { get; set; }
+
+        [DisplayName("Code")]
+        public string ApartCodeName { get; set; }
     }
 }

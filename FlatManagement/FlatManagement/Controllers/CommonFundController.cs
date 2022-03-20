@@ -1,5 +1,6 @@
 ﻿using FlatManagement.Models;
 using FlatManagement.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,14 +21,19 @@ namespace FlatManagement.Controllers
         }
 
         // GET: Flat
+        [Authorize]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.CommonFunds.ToListAsync());
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            return View(await _context.CommonFunds.Where(e => e.ApartCodeName == APART_CODE_LOCAL_VAR).ToListAsync());
         }
 
         // GET: Flat/Create
+        [Authorize]
         public IActionResult AddOrEdit(int id = 0)
         {
+            string userName = User.Identity.Name;
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
             //var usersList = (from users in _context.Users.Where(p => p.Flat_No != null)
             //                 select new SelectListItem()
             //                 {
@@ -65,7 +71,7 @@ namespace FlatManagement.Controllers
             //fundType.Insert(0, new EnumModel { Id = 0, Value = "--Select Fund Type--" });
             //ViewBag.fundType = fundType;
 
-            var fundType = (from b in _context.EnumValues.Where(b => b.Value.Contains("FUND_TYPE"))
+            var fundType = (from b in _context.EnumValues.Where(b => b.Value.Contains("FUND_TYPE") && b.ApartCodeName == APART_CODE_LOCAL_VAR)
                            select new SelectListItem()
                            {
                                Value = b.EnumText.ToString(),
@@ -89,14 +95,17 @@ namespace FlatManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddOrEdit(CommonFundVM CommonFundVM)
         {
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            var APART_APART_LOCAL_VAR = HttpContext.Request.Cookies["COMNAME"];
+
             string flat_No = CommonFundVM.FlatNo;
 
             var GetOwner = _context.Users
-                                               .Where(p => p.Flat_No == flat_No)
+                                               .Where(p => p.Flat_No == flat_No && p.IsActive==true && p.ApartCodeName== APART_CODE_LOCAL_VAR)
                                                .Select(p => p.FlatOwner).First();
 
             CommonFundVM.FlatOwner = GetOwner;
-
+            CommonFundVM.ApartCodeName = APART_CODE_LOCAL_VAR;
             CommonFundVM.CollectionBy = User.Identity.Name;
 
             ModelState.Clear();
@@ -108,12 +117,12 @@ namespace FlatManagement.Controllers
                     _context.Update(CommonFundVM);
 
 
-                string textBody = "Fund Collection from the flat owner of " + CommonFundVM.FlatNo + " for the month:" + CommonFundVM.Month + " Amount: " + CommonFundVM.Amount + " Collection Date: " + CommonFundVM.CollectionDate;
+                string textBody = "Fund Collection from the flat owner of " + CommonFundVM.FlatNo + " for the month:" + CommonFundVM.Month + " Amount: " + CommonFundVM.Amount + " Collection Date: " + CommonFundVM.CollectionDate+" Thanks -"+ APART_APART_LOCAL_VAR;
                 string textSubject = "Fund Collection";
 
                 SendNotificationMaster SNMObj = new SendNotificationMaster(_context);
-                SNMObj.SendNotification("All","Committee", textBody, textSubject, null);
-                SNMObj.SendNotification("All","Treasurer", textBody, textSubject, null);
+                SNMObj.SendNotification("All","Committee", APART_CODE_LOCAL_VAR, textBody, textSubject, null);
+                SNMObj.SendNotification("All","Treasurer", APART_CODE_LOCAL_VAR, textBody, textSubject, null);
                 SNMObj.OwnerNotification(CommonFundVM.FlatNo, textBody, textSubject);
 
                 await _context.SaveChangesAsync();

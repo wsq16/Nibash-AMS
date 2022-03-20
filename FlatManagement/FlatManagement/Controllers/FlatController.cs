@@ -18,21 +18,21 @@ namespace FlatManagement.Controllers
         }
 
         // GET: Flat
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Flats.ToListAsync());
-        }
+        //public async Task<IActionResult> Index()
+       // {
+           // return View(await _context.Flats.ToListAsync());
+       // }
 
 
 
         // GET: Flat/Create
-        public IActionResult AddOrEdit(int id = 0)
-        {
-            if (id == 0)
-                return View(new FlatVM());
-            else
-                return View(_context.Flats.Find(id));
-        }
+        //public IActionResult AddOrEdit(int id = 0)
+       // {
+           // if (id == 0)
+           //     return View(new FlatVM());
+          //  else
+               // return View(_context.Flats.Find(id));
+        //}
 
         // POST: Employee/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -63,8 +63,8 @@ namespace FlatManagement.Controllers
             }
 
 
-            var valObj = await _context.Flats.FindAsync(id);
-            _context.Flats.Remove(valObj);
+           // var valObj = await _context.Flats.FindAsync(id);
+          //  _context.Flats.Remove(valObj);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
 

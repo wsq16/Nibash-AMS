@@ -1,0 +1,191 @@
+﻿@model FlatManagement.Models.AdvancedVM
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h4>Advanced Payment</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="AddOrEdit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="PersonType" />
+            <input type="hidden" asp-for="PersonEmail" />
+            @*@Html.HiddenFor(m => m.CollectionBy, new { Value = @User.Identity.Name })*@
+
+            @if (@Model.Id > 0)
+            {
+        <div class="form-row">
+            <div class="form-group  col-md-6">
+                
+                    @Html.LabelFor(m => m.PersonType)
+                    @Html.TextBoxFor(model => model.PersonType, new { @placeholder = "Person Type", @class = "cPersonType form-control", @readonly = "readonly" })
+               
+            </div>
+            <div class="form-group  col-md-6">
+               
+                    @Html.LabelFor(m => m.PersonEmail)
+                    @Html.TextBoxFor(model => model.PersonEmail, new { @placeholder = "Person Email", @class = "cPersonEmail form-control", @readonly = "readonly" })
+                
+            </div>
+        </div>
+            }
+            else
+            {
+            <div class="form-row">
+                <div class="form-group  col-md-12">
+                    <label for="chkAdvanced_yes">
+                        Advanced To
+                        <input type="radio" id="radio_Employee_yes" value="Employee" name="AdvancedTO" />
+                        Employee &nbsp;
+                        <input type="radio" id="radio_Employee_no" value="Supplier" name="AdvancedTO" />
+                        Supplier
+                    </label>
+                    <div id="div_employee" style="display: none;">
+                        Select Employee:
+                        <fieldset class="employeeLbl">
+                            @*@Html.DropDownListFor(m => m.PersonEmail,
+                        new SelectList(ViewBag.GetEmployeeList, "Value", "Text"),
+                        "Select Employee", new { @class = "form-control", id = "employee_email" })*@
+                            @Html.DropDownList("advanceEmailEmployee",
+             new SelectList(ViewBag.GetEmployeeList, "Value", "Text"),
+             "Select Employee", new { @class = "form-control", id = "employee_email" })
+
+                        </fieldset>
+                    </div>
+                    <div id="div_supplier" style="display: none;">
+                        Select Supplier:
+                        <fieldset class="supplierLbl">
+                            @*@Html.DropDownListFor(m => m.PersonEmail,
+                        new SelectList(ViewBag.GetSuplierList, "Value", "Text"),
+                        "Select Supplier", new { @class = "form-control", id = "supplier_email" })*@
+                            @Html.DropDownList("advanceEmailSupplier",
+             new SelectList(ViewBag.GetSuplierList, "Value", "Text"),
+             "Select Supplier", new { @class = "form-control", id = "supplier_email" })
+                        </fieldset>
+                    </div>
+                    <hr />
+                </div>
+            </div>
+            }
+
+
+
+            <div class="form-row">
+                <div class="form-group  col-md-6">
+                    @Html.LabelFor(m => m.Amount, new { @class = "control-label" })<span>*</span>
+                    @Html.TextBoxFor(m => m.Amount, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Amount)
+                </div>
+                <div class="form-group  col-md-6">
+                    @Html.LabelFor(m => m.Month, new { @class = "control-label" })<span>*</span>
+                    @*@Html.DropDownList("Month", (SelectList)ViewBag.Month, new { @class = "form-control" })*@
+                    <select asp-for="Month" name="Month" class="form-control" asp-items="@ViewBag.Month"></select>
+                    @Html.ValidationMessageFor(m => m.Month)
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group  col-md-4">
+                    @Html.LabelFor(m => m.Year, new { @class = "control-label" })<span>*</span>
+                    <select asp-for="Year" name="Year" class="form-control" asp-items="@ViewBag.Years"></select>
+                    @*@Html.DropDownListFor(model => model.Year, (IEnumerable<SelectListItem>)ViewBag.Years, "Year", new { @class = "form-control" })*@
+                    @Html.ValidationMessageFor(m => m.Year)
+                </div>
+                <div class="form-group  col-md-4">
+                    @Html.LabelFor(m => m.CollectionDate, new { @class = "control-label" })<span>*</span>
+                    @*@Html.TextBoxFor(m => m.CollectionDate, new { @class = "form-control" })*@
+                    @Html.TextBoxFor(m => m.CollectionDate, "{0:dd-MM-yyyy}", new { @class = "cCollectionDate form-control", placeholder = "Collection Date", id = "CollectionDateID" })  @*"{0:dd-MM-yyyy}",*@
+                    @Html.ValidationMessageFor(m => m.CollectionDate)
+                </div>
+                <div class="form-group  col-md-4">
+                    @Html.LabelFor(m => m.AdvancePaymentDueDate, new { @class = "control-label" })<span>*</span>
+                    @*@Html.TextBoxFor(m => m.CollectionDate, new { @class = "form-control" })*@
+                    @Html.TextBoxFor(m => m.AdvancePaymentDueDate, "{0:dd-MM-yyyy}", new { @class = "cAdvancePaymentDueDate form-control", placeholder = "Collection Date", id = "AdvancePaymentDueDateID" })  @*"{0:dd-MM-yyyy}",*@
+                    @Html.ValidationMessageFor(m => m.AdvancePaymentDueDate)
+                </div> 
+            </div>
+
+
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <input type="submit" value="Submit" class="btn btn-primary btn-block" />
+                </div>
+                <div class="form-group col-md-6">
+                    <a asp-action="Index" class="btn btn-secondary btn-block"><i class="fa fa-table"></i>Back to List</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <!--For Datepicker-->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            /* format: 'dd/mm/yyyy'*/
+            $("#CollectionDateID").datepicker();
+            $("#AdvancePaymentDueDateID").datepicker();
+        });
+    </script>
+
+    <script>
+        var i = 0;
+        for (i = 2000; i <= 2025; i++) {
+            $("#Year").append("<option value='" + i + "'>" + i + "</option>")
+        }
+    </script>
+
+    <script>
+        var Commission = parseFloat($('.cCommision').val().replace(/\,/g, ''));
+        if (isNaN(Commission) || Commission <= 0) {
+            ShowResult("Fail", "Commission can't be not be zero");
+            $('.cCommision').css('background-color', 'yellow');
+
+            return;
+        }
+    </script>
+
+    <script>
+        $(function () {
+            $("input[name='AdvancedTO']").click(function () {
+                if ($("#radio_Employee_yes").is(":checked")) {
+                    $("#div_employee").show();
+                    $("#div_supplier").hide();
+                    var getValue = $("#radio_Employee_yes").val();
+                    $("#PersonType").val(getValue);
+                } else {
+                    $("#div_employee").hide();
+                    $("#div_supplier").show();
+                    var getValue = $("#radio_Employee_no").val();
+                    $("#PersonType").val(getValue);
+                }
+            });
+        });
+    </script>
+
+<script>
+    $("#employee_email").change(function () {
+        var getValueEmail = $("#employee_email").val();
+        $("#PersonEmail").val(getValueEmail);
+        
+    });
+
+    $("#supplier_email").change(function () {
+        var getValueSupplier = $("#supplier_email").val();
+        $("#PersonEmail").val(getValueSupplier);
+        
+    });
+</script>
+}

@@ -40,54 +40,55 @@
                 <br />
                 @Html.DisplayFor(m => m.Flow)
             </div>
+           
+                <div class="form-group">
+                    <label asp-for="FlatNo" class="control-label font-weight-bold"></label>
+                    <input asp-for="FlatNo" class="form-control" readonly="readonly" />
+                </div>
+            
+                <div class="form-group">
+                    <label asp-for="FlatOwner" class="control-label font-weight-bold"></label>
+                    <input asp-for="FlatOwner" class="form-control" readonly="readonly" />
+                </div>
+           
+                <div class="form-group">
+                    <label asp-for="Purpose" class="control-label font-weight-bold"></label>
+                    <input asp-for="Purpose" class="form-control" readonly="readonly" />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Amount" class="control-label font-weight-bold"></label>
+                    @Html.TextBoxFor(m => m.Amount, new { @maxlength = "15", @placeholder = "Amount", @class = " cAmount right form-control", @readonly = "Readonly" })
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="TransDate" class="control-label font-weight-bold"></label>
+                    <input asp-for="TransDate" type="text" class="form-control" value="@DateTime.Now.ToString("dd-MM-yyyy")" readonly="readonly" />
+                </div>
+
+                <div class="form-group">
+                    @if (Model.ReceiptNumber != null)
+                    {
+                        <label asp-for="ReceiptNumber" class="control-label font-weight-bold"></label>
+                        @Html.TextBoxFor(m => m.ReceiptNumber, new { @maxlength = "15", @placeholder = "ReceiptNumber", @class = " cReceiptNumber right form-control", @readonly = "Readonly" })
+                    }
+                </div>
 
 
-            <div class="form-group">
-                <label asp-for="FlatNo" class="control-label font-weight-bold"></label>
-                <input asp-for="FlatNo" class="form-control" readonly="readonly" />
-            </div>
-            <div class="form-group">
-                <label asp-for="FlatOwner" class="control-label font-weight-bold"></label>
-                <input asp-for="FlatOwner" class="form-control" readonly="readonly" />
-            </div>
-            <div class="form-group">
-                <label asp-for="Purpose" class="control-label font-weight-bold"></label>
-                <input asp-for="Purpose" class="form-control" readonly="readonly" />
-            </div>
+                <div class="form-group col-md-4">
+                    @if (Model.ReceiptFile != null)
+                    {
+                        @Html.ActionLink("Download", "DownloadFile", new { fileName = Model.ReceiptFile });
+                    }
+                    else
+                    {
+                        @*<span>No file to download!!</span>*@
+                    }
+                </div>
 
-            <div class="form-group">
-                <label asp-for="Amount" class="control-label font-weight-bold"></label>
-                @Html.TextBoxFor(m => m.Amount, new { @maxlength = "15", @placeholder = "Amount", @class = " cAmount right form-control", @readonly = "Readonly" })
-            </div>
+                <div class="form-row no-print">
 
-            <div class="form-group">
-                <label asp-for="TransDate" class="control-label font-weight-bold"></label>
-                <input asp-for="TransDate" type="text" class="form-control" value="@DateTime.Now.ToString("dd-MM-yyyy")" readonly="readonly" />
-            </div>
-
-            <div class="form-group">
-                @if (Model.ReceiptNumber != null)
-                {
-                    <label asp-for="ReceiptNumber" class="control-label font-weight-bold"></label>
-                    @Html.TextBoxFor(m => m.ReceiptNumber, new { @maxlength = "15", @placeholder = "ReceiptNumber", @class = " cReceiptNumber right form-control", @readonly = "Readonly" })
-                }
-            </div>
-
-
-            <div class="form-group col-md-4">
-                @if (Model.ReceiptFile != null)
-                {
-                    @Html.ActionLink("Download", "DownloadFile", new { fileName = Model.ReceiptFile });
-                }
-                else
-                {
-                    @*<span>No file to download!!</span>*@
-                }
-            </div>
-
-            <div class="form-row no-print">
-
-                @*@if (User.IsInRole("Treasurer"))
+                    @*@if (User.IsInRole("Treasurer"))
                 {
                     <div class="form-group col-md-3">
                         <a class="btn btn-primary btn-block" href="/Payment/checkout?productNameParam=@Model.Flow&priceParam=@Model.Amount&billId=@Model.Id&webAction=Process"> <i class="fas fa-dollar-sign"></i> Payment </a>
@@ -98,15 +99,15 @@
                     </div>
                 }*@
 
-                <div class="form-group col-md-6">
-                    <input type="button" value="Print" onclick="display()" class="btn btn-primary btn-block" />
+                    <div class="form-group col-md-6">
+                        <input type="button" value="Print" onclick="display()" class="btn btn-primary btn-block" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <a asp-action="Index" class="btn btn-secondary btn-block"><i class="fa fa-table"></i>Back to List</a>
+                    </div>
                 </div>
-                <div class="form-group col-md-6">
-                    <a asp-action="Index" class="btn btn-secondary btn-block"><i class="fa fa-table"></i>Back to List</a>
-                </div>
-            </div>
 
-        </form>
+            </form>
     </div>
 </div>
 

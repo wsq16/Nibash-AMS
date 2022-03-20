@@ -1,4 +1,6 @@
 ﻿using FlatManagement.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -11,21 +13,24 @@ namespace FlatManagement.Controllers
     public class FlatConfigController : Controller
     {
         private readonly FlatDBContext _context;
-
+        
         public FlatConfigController(FlatDBContext context)
         {
             _context = context;
         }
 
         // GET: Flat
+        [Authorize]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.FlatConfigs.ToListAsync());
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            return View(await _context.FlatConfigs.Where(e => e.ApartCodeName == APART_CODE_LOCAL_VAR).ToListAsync());
         }
 
 
 
         // GET: Flat/Create
+        [Authorize]
         public IActionResult AddOrEdit(int id = 0)
         {
             if (id == 0)
@@ -41,7 +46,8 @@ namespace FlatManagement.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AddOrEdit(FlatConfigVM flatVM)
         {
-            FlatConfigVM addModel = new FlatConfigVM();
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            FlatConfigVM addModel = null;// new FlatConfigVM();
             string[] alphaSerice = new string[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
             string[] numericSerice = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26" };
 
@@ -81,6 +87,7 @@ namespace FlatManagement.Controllers
 
                             for (int flat = 0; flat < FlatPerWing; flat++)
                             {
+                                addModel = new FlatConfigVM();
                                 countID++;
                                 string flatStyle = (flatStrNum == 1) ? alphaSerice[flat].ToString() : numericSerice[flat].ToString();
 
@@ -99,11 +106,13 @@ namespace FlatManagement.Controllers
                                         flatNumber = wingStyle + DelimeterStr + countFloorLoop + DelimeterStr + flatStyle;
                                         break;
                                 }
-                                addModel.Floor = countFloorLoop;
+                                addModel.ApartCodeName = APART_CODE_LOCAL_VAR;
+                                addModel.Floor = t;
                                 addModel.WingName = wingStyle;
-                                addModel.Id = countID;
-                                addModel.FlatNo = flatNumber;
+                                // addModel.Id = countID;
+                                addModel.FlatNo =  flatNumber;
                                 addModel.TotalFlat = TotalFlat;
+                                addModel.slId = countID; 
                                 _context.FlatConfigs.Add(addModel);
                                 _context.SaveChanges();
 
@@ -118,6 +127,7 @@ namespace FlatManagement.Controllers
                     {
                         for (int f = 0; f < FlatPerFloor; f++)
                         {
+                            addModel = new FlatConfigVM();
                             countID++;
                             string flatStyle = (flatStrNum == 1) ? alphaSerice[f].ToString() : numericSerice[f].ToString();
 
@@ -133,12 +143,13 @@ namespace FlatManagement.Controllers
                                     flatNumber = flatStyle + DelimeterStr + countFloorLoop;
                                     break;
                             }
-
-                            addModel.Floor = countFloorLoop;
-                            addModel.WingName = "Nal";
-                            addModel.Id = countID;
+                            addModel.ApartCodeName = APART_CODE_LOCAL_VAR;
+                            addModel.Floor = i;
+                            addModel.WingName = "-";
+                            //addModel.Id = countID;
                             addModel.FlatNo = flatNumber;
                             addModel.TotalFlat = TotalFlat;
+                            addModel.slId = countID;
                             _context.FlatConfigs.Add(addModel);
                             _context.SaveChanges();
                         }

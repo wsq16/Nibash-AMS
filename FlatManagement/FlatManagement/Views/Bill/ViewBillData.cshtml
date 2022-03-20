@@ -1,0 +1,161 @@
+﻿@model FlatManagement.Models.BillVM
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+
+<h4>Bill</h4>
+<hr />
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="ViewBillData" onsubmit = "return(validate());" name = "billForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="PreparedBy" value=" @User.Identity.Name" />
+            <input type="hidden" asp-for="EntryDate" value="@DateTime.Now" /> @*<input type="hidden" asp-for="BillDate" value="@DateTime.Now" />*@
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="BillType" class="control-label"></label>
+                    <span asp-validation-for="BillType" class="text-danger"></span>
+                    @Html.TextBoxFor(model => model.BillType, new { @placeholder = "Bill Type", @class = "cBillType form-control", @readonly = "readonly" })
+
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="BillDate" class="control-label"></label>
+                    @Html.TextBoxFor(model => model.BillDate, new { @placeholder = "Bill Date", @class = "cBillDate form-control", @readonly = "readonly" })
+
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="BillFor" class="control-label"></label>
+                    @Html.TextBoxFor(model => model.BillFor, new { @placeholder = "Bill For", @class = "cBillFor form-control", @readonly = "readonly" })
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label asp-for="Amount" class="control-label"></label>
+                    @Html.TextBoxFor(model => model.Amount, new { @placeholder = "Bill For", @class = "cBillFor form-control", @readonly = "readonly" })
+                </div>
+
+            </div>
+            <div class="form-row" id="FlatNo" style="display: none">
+                <div class="form-group col-md-12">
+                    <label asp-for="FlatNo" class="control-label"></label>
+                    @Html.TextBoxFor(model => model.FlatNo, new { @placeholder = "Bill For", @class = "cBillFor form-control", @readonly = "readonly" })
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="DueDate" class="control-label"></label>
+                    @Html.TextBoxFor(model => model.DueDate, new { @placeholder = "Due Date", @class = "cDueDate form-control", @readonly = "readonly" })
+
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label asp-for="Remarks" class="control-label"></label>
+                    @Html.TextBoxFor(model => model.Remarks, new { @placeholder = "Due Date", @class = "cDueDate form-control", @readonly = "readonly" })
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="ReceivedAmount" class="control-label"></label>
+                    @Html.TextBoxFor(model => model.ReceivedAmount, new { @placeholder = "Receive Amount", @class = " cReceivedAmount form-control" })
+                </div>
+
+                <div class="form-group col-md-6">
+                    @Html.Label("Receive Notes")
+                    @Html.TextAreaFor(model => model.ReceivedAmountNotes, new { @placeholder = "Receive Notes", @class = "cReceivedAmountNotes form-control" })
+                </div>
+            </div>
+
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    @* <input type="button" id="btnCheck" value="Save" onclick="return ValidateAmount()" />*@
+
+                    <input type="submit" value="Submit" class="btn btn-primary btn-block" />
+                </div>
+                <div class="form-group col-md-6">
+                    <a asp-action="Index" class="btn btn-secondary btn-block"><i class="fa fa-table"></i>Back to List</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            $.datepicker.parseDate("yy-mm-dd", "2007-01-26");
+
+            $("#datepicker").datepicker();
+            $("#datepicker1").datepicker();
+        });
+    </script>
+
+    <script>
+        function ValidateAmount() {
+            var DueAmount = parseFloat(document.getElementById("Amount").value.trim());
+            var paidAmount = parseFloat(document.getElementById("ReceivedAmount").value.trim());
+
+            if (DueAmount === paidAmount) {
+                //alert("Paid Successfule!");
+                window.location.href = "/Bill/ViewBillData";
+            } else {
+                alert("Paid UnSuccessfule!");
+            }
+            /*
+            if (document.getElementById("ReceivedAmount").value.trim() == "") {
+                alert("Please enterAmount!");
+                return false;
+            }
+           */
+            
+        };
+    </script>
+
+        <script type="text/javascript">
+            // Form validation code will come here.
+            function validate() {
+                var DueAmount = parseFloat(document.getElementById("Amount").value.trim());
+                var paidAmount = parseFloat(document.getElementById("ReceivedAmount").value.trim());
+
+                if (paidAmount == "") {
+                    alert("Please provide received amount!");
+                    document.billForm.ReceivedAmount.focus();
+                    return false;
+                }
+
+                if (DueAmount != paidAmount) {
+                    alert("Paid UnSuccessful!");
+                    document.billForm.ReceivedAmount.focus();
+                    return false;
+                }
+
+                //if (DueAmount === paidAmount) {
+                    //alert("Paid Successfule!");
+                   // window.location.href = "/Bill/ViewBillData";
+               // } else {
+                   // alert("Paid UnSuccessfule!");
+                   // return false;
+                //}
+                return(true);
+          }
+       //-->
+    </script>
+        
+}

@@ -1,4 +1,5 @@
 ﻿using FlatManagement.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -16,7 +17,7 @@ namespace FlatManagement.Controllers
         private readonly FlatDBContext _context;
         public IConfiguration _configuration;
         private readonly RoleManager<IdentityRole> roleManager;
-
+        
 
         public ApprovalLimitController(IConfiguration configuration, FlatDBContext context, RoleManager<IdentityRole> roleManager)
         {
@@ -28,7 +29,9 @@ namespace FlatManagement.Controllers
             // GET: Flat
         public async Task<IActionResult> Index()
         {
-            return View(await _context.ApprovalLimits.ToListAsync());
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            return View(await _context.ApprovalLimits.Where(e => e.ApartCodeName == APART_CODE_LOCAL_VAR).ToListAsync());
+
         }
 
 
@@ -58,7 +61,12 @@ namespace FlatManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddOrEdit(ApprovalLimitVM ApprovalLimitVM)
         {
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
             ApprovalLimitVM.Flow = ApprovalLimitVM.FlowTypes.ToString();
+
+            ModelState.Clear();
+            ApprovalLimitVM.ApartCodeName = APART_CODE_LOCAL_VAR;
+
             if (ModelState.IsValid)
             {
                 if (ApprovalLimitVM.Id == 0)
@@ -85,7 +93,6 @@ namespace FlatManagement.Controllers
             _context.Contracts.Remove(values);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-
         }
     }
 }

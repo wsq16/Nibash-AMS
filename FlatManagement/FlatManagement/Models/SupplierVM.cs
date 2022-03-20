@@ -57,7 +57,11 @@ namespace FlatManagement.Models
         [DisplayName("E-TIN")]
         [Column(TypeName = "nvarchar(25)")]
         public string ETIN { get; set; }
-                      
+
+        [DisplayName("Code")]
+        public string ApartCodeName { get; set; }
+
+
 
 
     }

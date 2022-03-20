@@ -43,6 +43,10 @@ namespace FlatManagement.Models
         [Column(TypeName = "nvarchar(45)")]
         public string ResponsibilityEmployee { get; set; }
 
+        [DisplayName("Responsibility(Employee)")]
+        [Column(TypeName = "nvarchar(45)")]
+        public string ResponsibilityEmployeeName { get; set; }
+
         [DisplayName("Start Date")]
         [Column(TypeName = "DateTime")]
         [Required(ErrorMessage = "Date field is required.")]
@@ -96,6 +100,8 @@ namespace FlatManagement.Models
         //[EnumDataType(typeof(ResolutionStatus))]
         //public ResolutionStatus Status { get; set; }
 
+        [DisplayName("Code")]
+        public string ApartCodeName { get; set; }
 
 
     }

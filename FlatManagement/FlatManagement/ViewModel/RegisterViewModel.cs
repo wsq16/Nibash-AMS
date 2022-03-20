@@ -75,6 +75,10 @@ namespace FlatManagement.ViewModel
         [Column(TypeName = "nvarchar(250)")]
         public string UserRole { get; set; }
 
+        [DisplayName("Apartment")]
+        [Column(TypeName = "nvarchar(250)")]
+        public string ApartmentList { get; set; }
+
 
         public string TenantValue { get; set; }
 
@@ -83,6 +87,11 @@ namespace FlatManagement.ViewModel
 
         [DisplayName("Flat Owner")] 
         public string FlatOwner { get; set; }
+
+        public bool IsActive { get; set; }
         
+        [DisplayName("Code")]
+        public string CodeName { get; set; }
+
     }
 }

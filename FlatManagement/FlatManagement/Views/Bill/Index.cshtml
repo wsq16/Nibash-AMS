@@ -102,6 +102,7 @@
                         if (ownFlat != item.BillFor)
                         {
                             <a class="btn btn-primary" href="/Payment/checkout?productNameParam=@item.BillType&priceParam=@item.Amount&billId=@item.Id&webAction=Bill"> <i class="fas fa-dollar-sign"></i> Payment </a>
+                            <a class="btn btn-primary" href="/Bill/ViewBillData?id=@item.Id"> <i class="fas fa-dollar-sign"></i> Cash Receive </a>
                         }
                     }
                 </td>
@@ -154,14 +155,28 @@
 
     <script type="text/javascript">
         function GoPayment() {
-            var BIdStr = document.getElementById("BIdStr").value;
-            var billIdVar = BIdStr.substring(0, BIdStr.length - 1);
-            var BAmountStr = document.getElementById("BAmountStr").value;
-            if (billIdVar.length > 0) {
-                window.location.href = "/Payment/checkout?productNameParam=Type&priceParam=" + BAmountStr + "&billId=" + billIdVar + "&webAction=Bill";
-            } else {
-                alert("Please select bill(s).");
-            }
+           /* if ($('#billIds').is(':checked')) {*/
+                var BIdStr = document.getElementById("BIdStr").value;
+                var billIdVar = BIdStr.substring(0, BIdStr.length - 1);
+                var BAmountStr = document.getElementById("BAmountStr").value;
+                if (billIdVar.length > 0) {
+                    window.location.href = "/Payment/checkout?productNameParam=Type&priceParam=" + BAmountStr + "&billId=" + billIdVar + "&webAction=Bill";
+                } else {
+                    alert("Please select bill(s).");
+                }
+            //} else {
+            //    alert("Please select bill(s).");
+            //}
+
+
+            //var BIdStr = document.getElementById("BIdStr").value;
+            //var billIdVar = BIdStr.substring(0, BIdStr.length - 1);
+            //var BAmountStr = document.getElementById("BAmountStr").value;
+            //if (billIdVar.length > 0) {
+            //    window.location.href = "/Payment/checkout?productNameParam=Type&priceParam=" + BAmountStr + "&billId=" + billIdVar + "&webAction=Bill";
+            //} else {
+            //    alert("Please select bill(s).");
+            //}
 
 
         }

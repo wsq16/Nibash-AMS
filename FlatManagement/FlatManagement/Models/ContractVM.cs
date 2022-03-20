@@ -48,5 +48,8 @@ namespace FlatManagement.Models
         [Column(TypeName = "nvarchar(25)")]
         [Required(ErrorMessage = "This field is required.")]
         public string BillFrequency { get; set; }
+
+        [DisplayName("Code")]
+        public string ApartCodeName { get; set; }
     }                 
 }

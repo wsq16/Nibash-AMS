@@ -6,25 +6,30 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FlatManagement.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FlatManagement.Controllers
 {
     public class EnumValuesController : Controller
     {
         private readonly FlatDBContext _context;
-
+        
         public EnumValuesController(FlatDBContext context)
         {
             _context = context;
         }
 
         // GET: EnumValues
+        [Authorize]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.EnumValues.ToListAsync());
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            return View(await _context.EnumValues.Where(e => e.ApartCodeName == APART_CODE_LOCAL_VAR).ToListAsync());
         }
 
         // GET: EnumValues/Create
+        [Authorize]
         public IActionResult AddOrEdit(int id=0)
         {
             ViewBag.ENUMTYPES = new SelectList(Enum.GetValues(typeof(EnumValueType)));
@@ -41,6 +46,9 @@ namespace FlatManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddOrEdit([Bind("Id,Value,EnumText")] EnumModel enumModel)
         {
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            ModelState.Clear();
+            enumModel.ApartCodeName = APART_CODE_LOCAL_VAR;
             if (ModelState.IsValid)
             {
                 if (enumModel.Id == 0)

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
@@ -28,17 +29,21 @@ namespace FlatManagement.Models
         }
 
         // GET: Flat
+        [Authorize]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Maintenances.ToListAsync());
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            return View(await _context.Maintenances.Where(e => e.ApartCodeName == APART_CODE_LOCAL_VAR).ToListAsync());
         }
 
 
 
         // GET: Flat/Create
+        [Authorize]
         public IActionResult AddOrEdit(int id = 0)
         {
-            var contractsList = (from c in _context.EnumValues.Where(p => p.Value.Contains("CONTRACT"))
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            var contractsList = (from c in _context.EnumValues.Where(p => p.Value.Contains("CONTRACT") && p.ApartCodeName== APART_CODE_LOCAL_VAR)
                              select new SelectListItem()
                              {
                                  Value = c.EnumText.ToString(),
@@ -50,7 +55,7 @@ namespace FlatManagement.Models
 
 
 
-            var maintenanceTypeList = (from c in _context.EnumValues.Where(p => p.Value.Contains("MAINTENANCE_TYPE"))
+            var maintenanceTypeList = (from c in _context.EnumValues.Where(p => p.Value.Contains("MAINTENANCE_TYPE") && p.ApartCodeName == APART_CODE_LOCAL_VAR)
                                  select new SelectListItem()
                                  {
                                      Value = c.EnumText.ToString(),
@@ -75,6 +80,7 @@ namespace FlatManagement.Models
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddOrEdit(MaintenanceVM varObj, string contractText, string categoryRadio)
         {
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
             try
             {
                 
@@ -87,7 +93,7 @@ namespace FlatManagement.Models
                 {
                     varObj.category = "Schedule";
                 }
-                
+                varObj.ApartCodeName = APART_CODE_LOCAL_VAR;
 
                 ModelState.Clear(); //this will clear all value
 
@@ -151,7 +157,7 @@ namespace FlatManagement.Models
                 using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
                 {
                     smtp.UseDefaultCredentials = false;
-                    smtp.Credentials = new NetworkCredential("jubayer.ah@gmail.com", "aqftzxebzqizorae");
+                    smtp.Credentials = new NetworkCredential("elongatesdev@gmail.com", "aqitzohxddzutnve");
                     smtp.EnableSsl = true;
                     smtp.Send(mail);
                 }
@@ -209,11 +215,12 @@ namespace FlatManagement.Models
 
         public List<SelectListItem> PopulateFlatOwners()
         {
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
             string constr = _configuration.GetConnectionString("DBConnectionString");
             List<SelectListItem> items = new List<SelectListItem>();
             using (SqlConnection con = new SqlConnection(constr))
             {
-                string query = "SELECT CONCAT(FirstName,' ', LastName) AS FLName, Email FROM AspNetUsers";
+                string query = "SELECT CONCAT(FirstName,' ', LastName) AS FLName, Email FROM AspNetUsers WHERE ApartCodeName='" + APART_CODE_LOCAL_VAR + "'  AND IsActive='true'";
                 using (SqlCommand cmd = new SqlCommand(query))
                 {
                     cmd.Connection = con;
@@ -238,12 +245,13 @@ namespace FlatManagement.Models
 
         public List<SelectListItem> GetMobileNumbers()
         {
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
             string constr = _configuration.GetConnectionString("DBConnectionString");
 
             List<SelectListItem> items = new List<SelectListItem>();
             using (SqlConnection con = new SqlConnection(constr))
             {
-                string query = "SELECT CONCAT(FirstName,' ', LastName) AS FLName, Mobile FROM AspNetUsers";
+                string query = "SELECT CONCAT(FirstName,' ', LastName) AS FLName, Mobile FROM AspNetUsers WHERE ApartCodeName='" + APART_CODE_LOCAL_VAR + "'  AND IsActive='true'";
                 using (SqlCommand cmd = new SqlCommand(query))
                 {
                     cmd.Connection = con;

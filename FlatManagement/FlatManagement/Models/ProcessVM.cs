@@ -133,6 +133,10 @@ namespace FlatManagement.Models
         //public FlowType FlowType { get; set; }
         [DisplayName("Type")]
         public TransType FlowTypes { get; set; }
+
+
+        [DisplayName("Code")]
+        public string ApartCodeName { get; set; }
     }
 
     public enum TransType

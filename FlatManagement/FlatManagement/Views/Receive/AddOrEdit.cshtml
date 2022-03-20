@@ -1,0 +1,156 @@
+﻿@model FlatManagement.Models.ReceiveVM
+
+@{
+    ViewData["Title"] = "Create";
+}
+<style>
+    .myDiv {
+        display: none;
+        padding: 10px;
+    }
+
+    #showOne {
+        border: 1px solid red;
+    }
+
+    #showTwo {
+        border: 1px solid green;
+    }
+
+    #showThree {
+        border: 1px solid blue;
+    }
+</style>
+
+
+<h4>Receive Payment</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="AddOrEdit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="ReceiveType" />
+            <input type="hidden" asp-for="ReceiveFrom" />
+            @*@Html.HiddenFor(m => m.CollectionBy, new { Value = @User.Identity.Name })*@
+
+            @if (@Model.Id > 0)
+            {
+                <div class="form-row">
+                    <div class="form-group  col-md-6">
+
+                        @Html.LabelFor(m => m.ReceiveType)
+                        @Html.TextBoxFor(model => model.ReceiveType, new { @placeholder = "Receive Type", @class = "cReceiveType form-control", @readonly = "readonly" })
+
+                    </div>
+                    <div class="form-group  col-md-6">
+
+                        @Html.Label("Receive From")
+                        @Html.TextBoxFor(model => model.ReceiveFrom, new { @placeholder = "Receive From Email", @class = "cReceive form-control", @readonly = "readonly" })
+
+                    </div>
+                </div>
+            }
+        <div class="form-row">
+            <div class="form-group  col-md-6">
+                <input type="radio" name="chkRcv" value="Bill" /> Bill
+                <input type="radio" name="chkRcv" value="Common_Fund" /> Common Fund
+                <input type="radio" name="chkRcv" value="Advanced" /> Advanced
+                <div id="showBill" class="myDiv">
+                    select <strong>"Bill"</strong>
+
+                    @Html.DropDownListFor(m => m.ReceiveFor, new SelectList(ViewBag.pendingBillList, "Value", "Text"), "Select Pending Bill", new { @class = "form-control" })
+
+                </div>
+
+
+
+                <div id="showCommon_Fund" class="myDiv">
+                    <strong>"showCommon_Fund"</strong> selected.
+                </div>
+                <div id="showAdvanced" class="myDiv">
+                    <strong>"show Advanced"</strong> selected.
+                </div>
+            </div>
+
+            <div class="form-group  col-md-6">
+                @Html.DropDownListFor(m => m.ReceiveFrom, new SelectList(ViewBag.FlatNo, "Value", "Text"), "Select Flat")
+            </div>
+        </div>
+
+            <div class="form-row">
+                <div class="form-group  col-md-6">
+                    @Html.LabelFor(m => m.Amount, new { @class = "control-label" })<span>*</span>
+                    @Html.TextBoxFor(m => m.Amount, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Amount)
+                </div>
+                <div class="form-group  col-md-6">
+                    @Html.LabelFor(m => m.Month, new { @class = "control-label" })<span>*</span>
+                    @*@Html.DropDownList("Month", (SelectList)ViewBag.Month, new { @class = "form-control" })*@
+                    <select asp-for="Month" name="Month" class="form-control" asp-items="@ViewBag.Month"></select>
+                    @Html.ValidationMessageFor(m => m.Month)
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group  col-md-6">
+                    @Html.LabelFor(m => m.Year, new { @class = "control-label" })<span>*</span>
+                    <select asp-for="Year" name="Year" class="form-control" asp-items="@ViewBag.Years"></select>
+                    @*@Html.DropDownListFor(model => model.Year, (IEnumerable<SelectListItem>)ViewBag.Years, "Year", new { @class = "form-control" })*@
+                    @Html.ValidationMessageFor(m => m.Year)
+                </div>
+                <div class="form-group  col-md-6">
+                    @Html.LabelFor(m => m.CollectionDate, new { @class = "control-label" })<span>*</span>
+                    @*@Html.TextBoxFor(m => m.CollectionDate, new { @class = "form-control" })*@
+                    @Html.TextBoxFor(m => m.CollectionDate, "{0:dd-MM-yyyy}", new { @class = "cCollectionDate form-control", placeholder = "Collection Date", id = "CollectionDateID" })  @*"{0:dd-MM-yyyy}",*@
+                    @Html.ValidationMessageFor(m => m.CollectionDate)
+                </div>
+            </div>
+
+
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <input type="submit" value="Submit" class="btn btn-primary btn-block" />
+                </div>
+                <div class="form-group col-md-6">
+                    <a asp-action="Index" class="btn btn-secondary btn-block"><i class="fa fa-table"></i>Back to List</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <!--For Datepicker-->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            /* format: 'dd/mm/yyyy'*/
+            $("#CollectionDateID").datepicker();
+        });
+    </script>
+
+    <script>
+        var i = 0;
+        for (i = 2000; i <= 2025; i++) {
+            $("#Year").append("<option value='" + i + "'>" + i + "</option>")
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('input[type="radio"]').click(function () {
+                var demovalue = $(this).val();
+                $("div.myDiv").hide();
+                $("#show" + demovalue).show();
+            });
+        });
+    </script>
+}

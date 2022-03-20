@@ -65,5 +65,7 @@ namespace FlatManagement.Models
         [DisplayName("Status:")]
         public bool isActive { get; set; }
 
+        [DisplayName("Code")]
+        public string ApartCodeName { get; set; }
     }
 }

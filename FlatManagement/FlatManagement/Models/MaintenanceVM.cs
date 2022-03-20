@@ -31,6 +31,7 @@ namespace FlatManagement.Models
         [DisplayName("Amount")]
         [Required(ErrorMessage = "Amount field is required.")]
         [Column(TypeName = "decimal(18,2)")]
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
         public decimal amount { get; set; }
 
         [DisplayName("Date")]
@@ -50,6 +51,9 @@ namespace FlatManagement.Models
         [Required(ErrorMessage = "Entry Date field is required.")]
         [DisplayFormat(DataFormatString = "{0:MM'/'dd'/'yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? entry_date { get; set; }
+
+        [DisplayName("Code")]
+        public string ApartCodeName { get; set; }
 
     }
 }

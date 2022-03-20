@@ -52,6 +52,9 @@ namespace FlatManagement.Models
         [Display(Name = "Flow")]
         public FlowType FlowTypes { get; set; }
 
+        [DisplayName("Code")]
+        public string ApartCodeName { get; set; }
+
     }
 
     

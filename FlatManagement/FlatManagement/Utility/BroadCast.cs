@@ -30,7 +30,7 @@ namespace FlatManagement.Utility
             {
                 using (MailMessage mail = new MailMessage())
                 {
-                    mail.From = new MailAddress("green.man6686@gmail.com");
+                    mail.From = new MailAddress("elongatesdev@gmail.com");
                     mail.To.Add(txtReceiver);
                     mail.Subject = emailSubject;
                     mail.Body = msgBody;
@@ -47,7 +47,7 @@ namespace FlatManagement.Utility
                     using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
                     {
                         smtp.UseDefaultCredentials = false;
-                        smtp.Credentials = new NetworkCredential("jubayer.ah@gmail.com", "aqftzxebzqizorae");
+                        smtp.Credentials = new NetworkCredential("elongatesdev@gmail.com", "aqitzohxddzutnve");
                         smtp.EnableSsl = true;
                         smtp.Send(mail);
                     }

@@ -1,6 +1,7 @@
 ﻿using FlatManagement.Models;
 using FlatManagement.Utility;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -41,9 +42,11 @@ namespace FlatManagement.Controllers
 
 
         // GET: Flat
+        [Authorize]
         public async Task<IActionResult> Index(string? stStatus, int? trn, string billId = "")
         {
             string userName = User.Identity.Name;
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
             if (trn == 1)
             {
                 if (billId.Length > 0)
@@ -69,8 +72,8 @@ namespace FlatManagement.Controllers
                             string textBody = "Your "+ item.Flow + " amount: "+item.Amount+" on "+item.Purpose+ " has been paid. Thank you --By Treasurer";
                             string textSubject = "Payment Completed";
                             SendNotificationMaster SNMObj = new SendNotificationMaster(_context);
-                            SNMObj.SendNotification("All","Committee", textBody, textSubject);
-                            SNMObj.SendNotification("All","Treasurer", textBody, textSubject);
+                            SNMObj.SendNotification("All","Committee", APART_CODE_LOCAL_VAR, textBody, textSubject);
+                            SNMObj.SendNotification("All","Treasurer", APART_CODE_LOCAL_VAR, textBody, textSubject);
                         }
                             
                         
@@ -84,23 +87,23 @@ namespace FlatManagement.Controllers
             }
             
             var OwnflatNo = _context.Users
-                                           .Where(p => p.UserName == userName)
+                                           .Where(p => p.UserName == userName&&p.ApartCodeName== APART_CODE_LOCAL_VAR)
                                            .Select(p => p.Flat_No).First();
             ViewBag.OwnflatNo = OwnflatNo;
 
             if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
             {
                 //.OrderByDynamis(student => student.Name, ListSortDirection.Ascending);
-                return View(await _context.Processes.Where(e => e.DeleteFlag == false).OrderByDescending(e => e.Id).ToListAsync());
+                return View(await _context.Processes.Where(e => e.DeleteFlag == false && e.ApartCodeName == APART_CODE_LOCAL_VAR).OrderByDescending(e => e.Id).ToListAsync());
             }
             else if (User.IsInRole("Committee"))
             {
-                return View(await _context.Processes.Where(e => e.DeleteFlag == false).OrderByDescending(e => e.Id).ToListAsync());
+                return View(await _context.Processes.Where(e => e.DeleteFlag == false && e.ApartCodeName == APART_CODE_LOCAL_VAR).OrderByDescending(e => e.Id).ToListAsync());
                 //return View(await _context.Processes.Where(e => e.TransactionStep == "Submitted" || e.Claim == 2).ToListAsync());
             }
             else if (User.IsInRole("Treasurer"))
             {
-                return View(await _context.Processes.Where(e => e.DeleteFlag == false).OrderByDescending(e => e.Id).ToListAsync());
+                return View(await _context.Processes.Where(e => e.DeleteFlag == false && e.ApartCodeName == APART_CODE_LOCAL_VAR).OrderByDescending(e => e.Id).ToListAsync());
                 //return View(await _context.Processes.Where(e => e.TransactionStep == "COM" || e.TransactionStep == "TRE").ToListAsync());
             }
             else if (User.IsInRole("FlatOwner"))
@@ -110,11 +113,11 @@ namespace FlatManagement.Controllers
                                                .Where(p => p.UserName == userName)
                                                .Select(p => p.Flat_No).First();
 
-                return View(await _context.Processes.Where(e => e.FlatNo == flatNo && e.DeleteFlag == false).OrderByDescending(e => e.Id).ToListAsync());
+                return View(await _context.Processes.Where(e => e.FlatNo == flatNo && e.DeleteFlag == false&&e.ApartCodeName== APART_CODE_LOCAL_VAR).OrderByDescending(e => e.Id).ToListAsync());
             }
             else
             {
-                return View(await _context.Processes.ToListAsync());
+                return View(await _context.Processes.Where(e=> e.ApartCodeName== APART_CODE_LOCAL_VAR).ToListAsync());
             }
         }
 
@@ -122,14 +125,15 @@ namespace FlatManagement.Controllers
 
 
 
-
-        [HttpGet]
         // GET: Flat/Create
+        [HttpGet]
+        [Authorize]
         public IActionResult AddOrEdit(int id = 0)
         {
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
             var getFlatLst = (from u in _context.Users
                               join f in _context.FlatConfigs
-                                     on u.Flat_No equals f.FlatNo
+                                     on u.Flat_No equals f.FlatNo where u.ApartCodeName== APART_CODE_LOCAL_VAR
                               select new SelectListItem()
                               {
                                   Value = f.FlatNo.ToString(),
@@ -152,7 +156,10 @@ namespace FlatManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddOrEdit(ProcessVM processVM)
         {
-            
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            var APART_APART_LOCAL_VAR = HttpContext.Request.Cookies["COMNAME"];
+
+            processVM.ApartCodeName = APART_CODE_LOCAL_VAR;
             try
             {
                 int transType = Convert.ToInt32(processVM.TransactionCategory);
@@ -160,26 +167,24 @@ namespace FlatManagement.Controllers
 
                 if(transType == 1)
                 {
-                    
                     string GetRole = GetFlow(processVM.Flow, processVM.Amount);
                     if (GetRole == "Committee")
                     {
                         processVM.PaymentStatus = "In-Progress";
-                        string textBody = "Request for payment Approval for expense on " + processVM.Purpose + " Amount:" + processVM.Amount + " Date: " + processVM.TransDate;
+                        string textBody = "Request for payment Approval for expense on " + processVM.Purpose + " Amount:" + processVM.Amount + " Date: " + processVM.TransDate+" Thanks -"+ APART_APART_LOCAL_VAR;
                         string textSubject = "A bill initiated from common fund. ";
                         SendNotificationMaster SNMObj = new SendNotificationMaster(_context);
-                        SNMObj.SendNotification("All",GetRole, textBody, textSubject);
-                        
+                        SNMObj.SendNotification("All",GetRole, APART_CODE_LOCAL_VAR, textBody, textSubject);
                     }
                     else
                     {
                         processVM.PaymentStatus = "Initial";
 
-                        string textBody = "A payment expense on " + processVM.Purpose + " Amount:" + processVM.Amount + " Date: " + processVM.TransDate;
+                        string textBody = "A payment expense on " + processVM.Purpose + " Amount:" + processVM.Amount + " Date: " + processVM.TransDate+" Thanks -"+ APART_APART_LOCAL_VAR;
                         string textSubject = "A bill initiated from common fund.";
                         SendNotificationMaster SNMObj = new SendNotificationMaster(_context);
-                        SNMObj.SendNotification("All", "Committee", textBody, textSubject);
-                        SNMObj.SendNotification("All", "Treasurer", textBody, textSubject);
+                        SNMObj.SendNotification("All", "Committee", APART_CODE_LOCAL_VAR, textBody, textSubject);
+                        SNMObj.SendNotification("All", "Treasurer", APART_CODE_LOCAL_VAR, textBody, textSubject);
                     }
                     string userName = User.Identity.Name;
                     // Resolve the user via their email
@@ -190,10 +195,6 @@ namespace FlatManagement.Controllers
 
                     processVM.curr_ApprovedByRole = roles[0].ToString();
                     processVM.Next_ApprovedByRole = GetRole;
-
-
-
-                  
                 }
                 else if (transType == 2)
                 {
@@ -201,7 +202,7 @@ namespace FlatManagement.Controllers
 
                     var flat_No = processVM.FlatNo;
                     var GetOwner = _context.Users
-                                               .Where(p => p.Flat_No == flat_No)
+                                               .Where(p => p.Flat_No == flat_No && p.ApartCodeName== APART_CODE_LOCAL_VAR)
                                                .Select(p => p.FlatOwner).First();
 
                     processVM.PaymentStatus = "Pending";
@@ -212,14 +213,13 @@ namespace FlatManagement.Controllers
                     processVM.Next_ApprovedByRole = "Flat Owner";
                     processVM.FlatOwner = GetOwner;
 
-
-                    string textBody = "Payment has been made for flat owner of " + processVM.FlatNo + " for expense on- " + processVM.Purpose + ". Amount:" + processVM.Amount + " Date:" + processVM.TransDate;
+                    string textBody = "Payment has been made for flat owner of " + processVM.FlatNo + " for expense on- " + processVM.Purpose + ". Amount:" + processVM.Amount + " Date:" + processVM.TransDate+" Thanks -"+ APART_APART_LOCAL_VAR;
                     string textSubject = "Payment initiated";
 
                     SendNotificationMaster SNMObj = new SendNotificationMaster(_context);
-                    SNMObj.SendNotification("All","Committee", textBody, textSubject);
-                    SNMObj.SendNotification("All", "Treasurer", textBody, textSubject);
-                    SNMObj.OwnerNotification(processVM.FlatNo, textBody, textSubject);
+                    SNMObj.SendNotification("All","Committee", APART_CODE_LOCAL_VAR, textBody, textSubject);
+                    SNMObj.SendNotification("All", "Treasurer", APART_CODE_LOCAL_VAR, textBody, textSubject);
+                    SNMObj.OwnerNotification(processVM.FlatNo, APART_CODE_LOCAL_VAR, textBody, textSubject);
                     // Gen mail to committee, flatowner, treasurer
 
                 }
@@ -266,6 +266,10 @@ namespace FlatManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> IndividualClaim(ProcessVM processVM, IFormFile FormFile)
         {
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            var APART_APART_LOCAL_VAR = HttpContext.Request.Cookies["COMNAME"];
+           
+
             ProcessVM newProcess = null;
             try
             {
@@ -298,6 +302,7 @@ namespace FlatManagement.Controllers
                 newProcess.TransactionCategory = "2";
                 newProcess.Claim = 2;
                 newProcess.ClaimRefId = processVM.Id;
+                newProcess.ApartCodeName = APART_CODE_LOCAL_VAR;
                 //newProcess.ReceiptFile = processVM.ReceiptFile;
 
 
@@ -336,15 +341,12 @@ namespace FlatManagement.Controllers
 
 
 
-                string textBody = "Request for claim approval for flat owner " + processVM.FlatNo + " Amount:" + processVM.Amount + " Date: " + processVM.TransDate;
+                string textBody = "Request for claim approval for flat owner " + processVM.FlatNo + " Amount:" + processVM.Amount + " Date: " + processVM.TransDate+" Thanks -"+ APART_APART_LOCAL_VAR;
                 string textSubject = "Claim Request";
                 SendNotificationMaster SNMObj = new SendNotificationMaster(_context);
-                SNMObj.SendNotification("All", "Committee", textBody, textSubject);
-                SNMObj.SendNotification("All", "Treasurer", textBody, textSubject);
-                SNMObj.OwnerNotification(processVM.FlatNo, textBody, textSubject);
-
-               
-
+                SNMObj.SendNotification("All", "Committee", APART_CODE_LOCAL_VAR, textBody, textSubject);
+                SNMObj.SendNotification("All", "Treasurer", APART_CODE_LOCAL_VAR, textBody, textSubject);
+                SNMObj.OwnerNotification(processVM.FlatNo, APART_CODE_LOCAL_VAR, textBody, textSubject);
 
                         //var flatNo = processVM.FlatNo;
                         //var GetOwner = _context.Users
@@ -398,6 +400,9 @@ namespace FlatManagement.Controllers
         {
             try
             {
+                var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+                var APART_APART_LOCAL_VAR = HttpContext.Request.Cookies["COMNAME"];
+                processVM.ApartCodeName = APART_CODE_LOCAL_VAR;
                 //processVM.Flow = processVM.FlowTypes.ToString();
                 //string GetRole = GetFlow(processVM.Flow, processVM.Amount);
                 //if (GetRole == "Committee")
@@ -419,11 +424,11 @@ namespace FlatManagement.Controllers
                 processVM.Next_ApprovedByRole = "Treasurer";
 
 
-                string textBody = "Request for payment Approval for expense on " + processVM.Purpose + " Amount:" + processVM.Amount + " Date: " + processVM.TransDate;
+                string textBody = "Request for payment Approval for expense on " + processVM.Purpose + " Amount:" + processVM.Amount + " Date: " + processVM.TransDate+" Thanks -"+ APART_APART_LOCAL_VAR;
                 string textSubject = "Payment Approved";
                 SendNotificationMaster SNMObj = new SendNotificationMaster(_context);
                 //SNMObj.SendNotification("Committee", textBody, textSubject);
-                SNMObj.SendNotification("All", "Treasurer", textBody, textSubject);
+                SNMObj.SendNotification("All", "Treasurer", APART_CODE_LOCAL_VAR, textBody, textSubject);
 
 
             }
@@ -448,10 +453,13 @@ namespace FlatManagement.Controllers
 
 
         [HttpGet]
+        [Authorize]
         // GET: Flat/Create
         public IActionResult ApproveSplit(int id = 0)
         {
-            var billType = (from b in _context.EnumValues.Where(b => b.Value.Contains("BILL_TYPE"))
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+           
+            var billType = (from b in _context.EnumValues.Where(b => b.Value.Contains("BILL_TYPE") && b.ApartCodeName == APART_CODE_LOCAL_VAR)
                             select new SelectListItem()
                             {
                                 Value = b.EnumText.ToString(),
@@ -463,7 +471,7 @@ namespace FlatManagement.Controllers
             var count = _context.Users.Count(p => p.Flat_No != null);
             if (id > 0)
             {
-                var totalAmount = _context.Processes.Where(p => p.Id == id).Select(p => p.Amount).FirstOrDefault();
+                var totalAmount = _context.Processes.Where(p => p.Id == id && p.ApartCodeName== APART_CODE_LOCAL_VAR).Select(p => p.Amount).FirstOrDefault();
                 var splitAmount = totalAmount / count;
                 ViewBag.splitAmountView = splitAmount;
             }
@@ -495,6 +503,9 @@ namespace FlatManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ApproveSplit(ProcessVM processVM, IFormFile FormFile)
         {
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            var APART_APART_LOCAL_VAR = HttpContext.Request.Cookies["COMNAME"];
+
             ModelState.Clear();
             if (ModelState.IsValid)
             {
@@ -506,16 +517,15 @@ namespace FlatManagement.Controllers
                 if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
                 {
                     var flatVar = _context.Users
-                                                .Where(p => p.Flat_No != null)
+                                                .Where(p => p.Flat_No != null && p.ApartCodeName== APART_CODE_LOCAL_VAR)
                                                 .Select(p => new {p.Mobile, p.Email, p.Flat_No }).ToList();
 
-                    string textBody = "Just to notify that the claim " + processVM.Amount + " on " + processVM.Purpose + " will be paid after collectting through our monthly bill. - By Treaurer";
+                    string textBody = "Just to notify that the claim " + processVM.Amount + " on " + processVM.Purpose + " will be paid after collectting through our monthly bill. - By Treaurer "+ APART_APART_LOCAL_VAR;
                     string textSubject = "Claim Request";
                     SendNotificationMaster SNMObj = new SendNotificationMaster(_context);
                     //SNMObj.SendNotification("Committee", textBody, textSubject);
-                    SNMObj.SendNotification("All", "Treasurer", textBody, textSubject);
-
-                    SNMObj.OwnerNotification(processVM.FlatNo, textBody, textSubject);
+                    SNMObj.SendNotification("All", "Treasurer", APART_CODE_LOCAL_VAR, textBody, textSubject);
+                    SNMObj.OwnerNotification(processVM.FlatNo, APART_CODE_LOCAL_VAR, textBody, textSubject);
                     foreach (var item in flatVar)
                     {
                         BillVM billVMObj = new BillVM();
@@ -538,10 +548,11 @@ namespace FlatManagement.Controllers
                         billVMObj.BillType = processVM.BillType;
                         billVMObj.FlatNo = e_FlatNo;
                         billVMObj.PreparedBy = User.Identity.Name;
+                        billVMObj.ApartCodeName = APART_CODE_LOCAL_VAR;
                         _context.Bills.Add(billVMObj);
 
                         string emailSubject = "A Bill Created";
-                        string smsBody = "A Bill Initiated. Please login to system and pay the bill on time.";
+                        string smsBody = "A Bill Initiated. Please login to system and pay the bill on time. -"+ APART_APART_LOCAL_VAR;
 
                         //EMAIL HERE
                         //BroadCast nB = new BroadCast();
@@ -550,7 +561,7 @@ namespace FlatManagement.Controllers
 
 
 
-                        SNMObj.OwnerNotification(e_FlatNo, smsBody, emailSubject);
+                        SNMObj.OwnerNotification(e_FlatNo, APART_CODE_LOCAL_VAR, smsBody, emailSubject);
 
                     }
                     processVM.PaymentStatus = "Waitting For Collection";
@@ -575,7 +586,8 @@ namespace FlatManagement.Controllers
         // GET: Flat
         public async Task<IActionResult> GetSplitListIndex()
         {
-            var countTotalUser = _context.Users.Count(p => p.Flat_No != null);
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            var countTotalUser = _context.Users.Count(p => p.Flat_No != null && p.ApartCodeName== APART_CODE_LOCAL_VAR);
             if (countTotalUser > 0)
             {
                 ViewBag.countTotalUserView = countTotalUser;
@@ -583,20 +595,22 @@ namespace FlatManagement.Controllers
 
             if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
             {
-                return View(await _context.Processes.Where(e => e.Claim == 3).ToListAsync());
+                return View(await _context.Processes.Where(e => e.Claim == 3 && e.ApartCodeName== APART_CODE_LOCAL_VAR).ToListAsync());
             }
             else
             {
-                return View(await _context.Processes.ToListAsync());
+                return View(await _context.Processes.Where(e=> e.ApartCodeName== APART_CODE_LOCAL_VAR).ToListAsync());
             }
         }
 
 
         [HttpGet]
+        [Authorize]
         // GET: Flat/Create
         public IActionResult PaymentGateway(int id = 0)
         {
-            var usersList = (from users in _context.Users.Where(p => p.Flat_No != null)
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            var usersList = (from users in _context.Users.Where(p => p.Flat_No != null && p.ApartCodeName== APART_CODE_LOCAL_VAR)
                              select new SelectListItem()
                              {
                                  Value = users.Flat_No.ToString(),
@@ -640,12 +654,12 @@ namespace FlatManagement.Controllers
         public string GetFlow(string flowName, Double amount)
         {
             string strResult="";
-
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
             try
             {
                  //&& p.AmountLimit_MAX <= amount && p.Flow == flowName
                 var GetRole = _context.ApprovalLimits
-                                                .Where(p => p.AmountLimit_MIN <= amount&& p.AmountLimit_MAX >= amount && p.Flow == flowName)                                                
+                                                .Where(p => p.AmountLimit_MIN <= amount&& p.AmountLimit_MAX >= amount && p.Flow == flowName && p.ApartCodeName== APART_CODE_LOCAL_VAR)                                                
                                                 .Select(p => p.RoleName).First();
                 strResult = GetRole.ToString();
             }
@@ -692,13 +706,15 @@ namespace FlatManagement.Controllers
 
         public void SendNotification(string roleName, string textBody, string emailSubject)
         {
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
             var users = (from user in _context.Users
                               join userRole in _context.UserRoles
                               on user.Id equals userRole.UserId
                               join role in _context.Roles
                               on userRole.RoleId equals role.Id
                               where role.Name == roleName
-                              select user).ToList();
+                              && user.ApartCodeName == APART_CODE_LOCAL_VAR
+                         select user).ToList();
             BroadCast nB = new BroadCast();
             foreach (var item in users)
             {
@@ -713,8 +729,10 @@ namespace FlatManagement.Controllers
 
         public void OwnerNotification(string flatNo, string textBody, string emailSubject)
         {
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+
             var flatVar = _context.Users
-                                               .Where(p => p.Flat_No == flatNo)
+                                               .Where(p => p.Flat_No == flatNo && p.ApartCodeName== APART_CODE_LOCAL_VAR)
                                                .Select(p => new { p.Mobile, p.Email, p.Flat_No }).ToList();
             BroadCast nB = new BroadCast();
             foreach (var item in flatVar)
@@ -733,12 +751,14 @@ namespace FlatManagement.Controllers
 
         public async Task<IActionResult> SMSUsers(string roleName)
         {
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
             var users = await (from user in _context.Users
                                join userRole in _context.UserRoles
                                on user.Id equals userRole.UserId
                                join role in _context.Roles
                                on userRole.RoleId equals role.Id
                                where role.Name == roleName
+                               && user.ApartCodeName == APART_CODE_LOCAL_VAR
                                select user)
                                  .ToListAsync();
 

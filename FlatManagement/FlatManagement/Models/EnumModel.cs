@@ -26,7 +26,8 @@ namespace FlatManagement.Models
 
         public EnumValueType EnumValueType { get; set; }
 
-
+        [DisplayName("Code")]
+        public string ApartCodeName { get; set; }
 
     }
 

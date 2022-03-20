@@ -7,11 +7,13 @@
 <hr />
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="AddOrEdit" enctype="multipart/form-data" method="post">
+        <form asp-action="AddOrEdit" enctype="multipart/form-data" method="post" name="msgFrom" id="msgFrom">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             @Html.HiddenFor(m => m.Attachment)
+            @Html.HiddenFor(m => m.ResponsibilityEmployee)
             
+
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label asp-for="AgendaName" class="control-label"></label>
@@ -60,13 +62,11 @@
                     <span asp-validation-for="ResponsibilityFlatOwner" class="text-danger"></span>
                 </div>
                 <div class="form-group col-md-3">
-                    <label asp-for="ResponsibilityEmployee" class="control-label"></label>
-                    <input asp-for="ResponsibilityEmployee" class="form-control" readonly />
-                    <span asp-validation-for="ResponsibilityEmployee" class="text-danger"></span>
+                    <label asp-for="ResponsibilityEmployeeName" class="control-label"></label>
+                    <input asp-for="ResponsibilityEmployeeName" class="form-control" readonly />
+                    <span asp-validation-for="ResponsibilityEmployeeName" class="text-danger"></span>
                 </div>
-            </div>
 
-            <div class="form-row">
                 <div class="form-group col-md-3">
                     <label asp-for="Status" class="control-label"></label>
                     <select asp-for="Status" class="form-control">
@@ -78,13 +78,16 @@
                     <span asp-validation-for="Status" class="text-danger"></span>
                 </div>
 
+            </div>
+
+            <div class="form-row">
+
+
                 <div class="form-group col-md-3" id="divClosingNote" style="display:none;">
                     <label asp-for="ResolutionClosingNote" class="control-label"></label>
                     @Html.TextBoxFor(m => m.ResolutionClosingNote, new { placeholder = "Resolution Closing Note", @class = "form-input" })
                 </div>
-            </div>
 
-            <div class="form-row">
                 <div class="form-group col-md-3 no-print">
                     <label asp-for="Attachment" class="control-label"></label>
                     <input type="file" name="Attachment" id="Attachment">
@@ -101,6 +104,8 @@
                         </div>
                     }
                 </div>
+
+
             </div>
 
             <div class="form-row">
@@ -148,43 +153,49 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
 <script type="text/javascript">
-    //FOr Message sending
-    $("#msg_BOTH").click(function () {
-
-        var checkBox = document.getElementById("msg_BOTH");
-
-        if (checkBox.checked == true) {
-            document.getElementById("msg_SMS").checked = false;
-            document.getElementById("msg_EMAIL").checked = false;
-
-            document.getElementById("msg_SMS").disabled = true;
-            document.getElementById("msg_EMAIL").disabled = true;
-        } else {
-            document.getElementById("msg_SMS").disabled = false;
-            document.getElementById("msg_EMAIL").disabled = false;
-        }
+    $(document).ready(function () {
+        $('#msgFrom input[type=checkbox]').attr('checked', false);
     });
+</script>
+
+
+
+    <script type="text/javascript">
+        //FOr Message sending
+        $("#msg_BOTH").click(function () {
+            var checkBox = document.getElementById("msg_BOTH");
+
+            if (checkBox.checked == true) {
+                document.getElementById("msg_SMS").checked = false;
+                document.getElementById("msg_EMAIL").checked = false;
+
+                document.getElementById("msg_SMS").disabled = true;
+                document.getElementById("msg_EMAIL").disabled = true;
+            } else {
+                document.getElementById("msg_SMS").disabled = false;
+                document.getElementById("msg_EMAIL").disabled = false;
+            }
+        });
 
 
         ///For Message receivers
         $("#to_All").click(function () {
+            var checkBox = document.getElementById("to_All");
 
-        var checkBox = document.getElementById("to_All");
+            if (checkBox.checked == true) {
+                document.getElementById("to_Committee").checked = false;
+                document.getElementById("to_Treasurer").checked = false;
+                document.getElementById("to_FlatOwner").checked = false;
 
-        if (checkBox.checked == true) {
-            document.getElementById("to_Committee").checked = false;
-            document.getElementById("to_Treasurer").checked = false;
-            document.getElementById("to_FlatOwner").checked = false;
-
-            document.getElementById("to_Committee").disabled = true;
-            document.getElementById("to_Treasurer").disabled = true;
-            document.getElementById("to_FlatOwner").disabled = true;
-        } else {
-            document.getElementById("to_Committee").disabled = false;
-            document.getElementById("to_Treasurer").disabled = false;
-            document.getElementById("to_FlatOwner").disabled = false;
-        }
-    });
-</script>
+                document.getElementById("to_Committee").disabled = true;
+                document.getElementById("to_Treasurer").disabled = true;
+                document.getElementById("to_FlatOwner").disabled = true;
+            } else {
+                document.getElementById("to_Committee").disabled = false;
+                document.getElementById("to_Treasurer").disabled = false;
+                document.getElementById("to_FlatOwner").disabled = false;
+            }
+        });
+    </script>
 
 }

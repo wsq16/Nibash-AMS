@@ -40,6 +40,7 @@ namespace FlatManagement.Models
         [DisplayName("Amount")]
         [Column(TypeName = "decimal(18,2)")]
         [Required(ErrorMessage = "This field is required.")]
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
         public double Amount { get; set; }
 
         [Required]
@@ -48,6 +49,15 @@ namespace FlatManagement.Models
         [DisplayFormat(DataFormatString = "{0:dd'/'MM'/'yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? DueDate { get; set; }
 
+
+        [DisplayName("Receive Amount")]
+        [Column(TypeName = "decimal(18,2)")]
+        [Required(ErrorMessage = "This field is required.")]
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public double ReceivedAmount { get; set; }
+
+        [Column(TypeName = "varchar(250)")]
+        public string ReceivedAmountNotes { get; set; }
         //[Required]
         //[Column(TypeName = "DateTime")]
         //[DisplayFormat(DataFormatString = "{0:dd'/'MM'/'yyyy}", ApplyFormatInEditMode = true)]
@@ -74,6 +84,10 @@ namespace FlatManagement.Models
             Common = 2,
             Others = 3
         }
+
+        [DisplayName("Code")]
+        public string ApartCodeName { get; set; }
+
 
         //public IList<SelectListItem> BillItems { get; set; }
 

@@ -19,6 +19,56 @@ namespace FlatManagement.Migrations
                 .HasAnnotation("ProductVersion", "5.0.10")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("FlatManagement.Models.AdvancedVM", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime?>("AdvancePaymentDueDate")
+                        .IsRequired()
+                        .HasColumnType("DateTime");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ApartCodeName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CollectionBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(25)");
+
+                    b.Property<DateTime?>("CollectionDate")
+                        .IsRequired()
+                        .HasColumnType("DateTime");
+
+                    b.Property<string>("Month")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(25)");
+
+                    b.Property<string>("PaymentStatus")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("PersonEmail")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("PersonType")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Year")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(25)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AdvancedPaymentTbl");
+                });
+
             modelBuilder.Entity("FlatManagement.Models.AgendaVM", b =>
                 {
                     b.Property<int>("Id")
@@ -40,6 +90,9 @@ namespace FlatManagement.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("ApartCodeName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Attachment")
                         .HasColumnType("nvarchar(50)");
 
@@ -59,6 +112,9 @@ namespace FlatManagement.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
+
+                    b.Property<string>("ApartCodeName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("City")
                         .HasColumnType("nvarchar(max)");
@@ -172,6 +228,9 @@ namespace FlatManagement.Migrations
                     b.Property<decimal>("AmountLimit_MIN")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("ApartCodeName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("CreateDate")
                         .IsRequired()
                         .HasColumnType("DateTime");
@@ -207,6 +266,9 @@ namespace FlatManagement.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("ApartCodeName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("BillDate")
                         .IsRequired()
                         .HasColumnType("DateTime");
@@ -235,6 +297,12 @@ namespace FlatManagement.Migrations
                     b.Property<string>("PreparedBy")
                         .HasColumnType("varchar(250)");
 
+                    b.Property<decimal>("ReceivedAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ReceivedAmountNotes")
+                        .HasColumnType("varchar(250)");
+
                     b.Property<string>("Remarks")
                         .HasColumnType("varchar(250)");
 
@@ -252,6 +320,9 @@ namespace FlatManagement.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ApartCodeName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("MemberId")
                         .HasColumnType("int");
@@ -279,11 +350,18 @@ namespace FlatManagement.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("ApartCodeName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CollectionBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(25)");
 
                     b.Property<DateTime?>("CollectionDate")
+                        .IsRequired()
+                        .HasColumnType("DateTime");
+
+                    b.Property<DateTime?>("CommonFundDueDate")
                         .IsRequired()
                         .HasColumnType("DateTime");
 
@@ -322,6 +400,11 @@ namespace FlatManagement.Migrations
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(250)");
 
+                    b.Property<string>("ApartCodeName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<string>("CompanyName")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -334,6 +417,11 @@ namespace FlatManagement.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("License")
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("LogoUri")
+                        .IsRequired()
+                        .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
                     b.Property<string>("Mobile")
@@ -350,6 +438,9 @@ namespace FlatManagement.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ApartCodeName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BillFrequency")
                         .IsRequired()
@@ -440,14 +531,17 @@ namespace FlatManagement.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("ApartCodeName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Designation")
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("EmpNID")
+                        .IsRequired()
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("EntryBy")
@@ -495,6 +589,9 @@ namespace FlatManagement.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("ApartCodeName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("EnumText")
                         .IsRequired()
                         .HasColumnType("varchar(25)");
@@ -518,6 +615,9 @@ namespace FlatManagement.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("ApartCodeName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("Date")
                         .HasColumnType("DateTime");
 
@@ -538,10 +638,18 @@ namespace FlatManagement.Migrations
 
             modelBuilder.Entity("FlatManagement.Models.FlatConfigVM", b =>
                 {
-                    b.Property<string>("FlatNo")
-                        .HasColumnType("nvarchar(25)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ApartCodeName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Delimeter")
+                        .HasColumnType("nvarchar(25)");
+
+                    b.Property<string>("FlatNo")
                         .HasColumnType("nvarchar(25)");
 
                     b.Property<int?>("FlatPerFloor")
@@ -559,14 +667,10 @@ namespace FlatManagement.Migrations
                     b.Property<int?>("GroundFloorStart")
                         .HasColumnType("int");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
                     b.Property<int?>("Sequence")
                         .HasColumnType("int");
 
                     b.Property<int?>("TotalFlat")
-                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<int?>("TotalWing")
@@ -584,31 +688,12 @@ namespace FlatManagement.Migrations
                     b.Property<bool>("isWing")
                         .HasColumnType("bit");
 
-                    b.HasKey("FlatNo");
-
-                    b.ToTable("FlatConfigs");
-                });
-
-            modelBuilder.Entity("FlatManagement.Models.FlatVM", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("FlatNo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<string>("FlatValue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(250)");
+                    b.Property<int>("slId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Flats");
+                    b.ToTable("FlatConfigs");
                 });
 
             modelBuilder.Entity("FlatManagement.Models.MaintenanceVM", b =>
@@ -617,6 +702,9 @@ namespace FlatManagement.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ApartCodeName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("MaintenanceDate")
                         .IsRequired()
@@ -656,6 +744,9 @@ namespace FlatManagement.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ApartCodeName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("DOB")
                         .HasColumnType("DateTime");
@@ -714,6 +805,9 @@ namespace FlatManagement.Migrations
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ApartCodeName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("BillAmount")
                         .HasColumnType("float");
@@ -799,6 +893,52 @@ namespace FlatManagement.Migrations
                     b.ToTable("Processes");
                 });
 
+            modelBuilder.Entity("FlatManagement.Models.ReceiveVM", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ApartCodeName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CollectionBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(25)");
+
+                    b.Property<DateTime?>("CollectionDate")
+                        .IsRequired()
+                        .HasColumnType("DateTime");
+
+                    b.Property<string>("Month")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(25)");
+
+                    b.Property<string>("ReceiveFor")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("ReceiveFrom")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("ReceiveType")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Year")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(25)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Receives");
+                });
+
             modelBuilder.Entity("FlatManagement.Models.ResolutionVM", b =>
                 {
                     b.Property<int>("Id")
@@ -809,6 +949,9 @@ namespace FlatManagement.Migrations
                     b.Property<string>("AgendaName")
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("ApartCodeName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Attachment")
                         .HasColumnType("nvarchar(55)");
@@ -830,6 +973,9 @@ namespace FlatManagement.Migrations
                         .HasColumnType("nvarchar(250)");
 
                     b.Property<string>("ResponsibilityEmployee")
+                        .HasColumnType("nvarchar(45)");
+
+                    b.Property<string>("ResponsibilityEmployeeName")
                         .HasColumnType("nvarchar(45)");
 
                     b.Property<string>("ResponsibilityFlatOwner")
@@ -885,6 +1031,9 @@ namespace FlatManagement.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
+                    b.Property<string>("ApartCodeName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("BillType")
                         .IsRequired()
                         .HasColumnType("nvarchar(55)");
@@ -936,6 +1085,9 @@ namespace FlatManagement.Migrations
 
                     b.Property<double>("Amount")
                         .HasColumnType("float");
+
+                    b.Property<string>("ApartCodeName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ETIN")
                         .HasColumnType("nvarchar(25)");

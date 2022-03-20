@@ -18,5 +18,8 @@ namespace FlatManagement.Models
         public string Details { get; set; }
 
         public SelectList AvailableTypeList { get; set; }
+
+        [DisplayName("Code")]
+        public string ApartCodeName { get; set; }
     }
 }

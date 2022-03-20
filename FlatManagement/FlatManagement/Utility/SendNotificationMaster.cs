@@ -65,6 +65,62 @@ namespace FlatManagement.Utility
         //SendNotification("Treasurer", textBody, textSubject);
         //OwnerNotification(processVM.FlatNo, textBody, textSubject);
 
+        /// <summary>
+        /// Send notification by apartment code
+        /// </summary>
+        /// <param name="msgType"></param>
+        /// <param name="roleName"></param>
+        /// <param name="textBody"></param>
+        /// <param name="emailSubject"></param>
+        /// <param name="attachedFile"></param>
+        public void SendNotification(string msgType, string roleName, string apartCode, string textBody, string emailSubject, string attachedFile = "")
+        {
+            var users = (from user in _context.Users
+                         join userRole in _context.UserRoles
+                         on user.Id equals userRole.UserId
+                         join role in _context.Roles
+                         on userRole.RoleId equals role.Id
+                         select user).Where(e=> e.ApartCodeName== apartCode).ToList();
+
+            if (roleName != "")
+            {
+                users = (from user in _context.Users
+                         join userRole in _context.UserRoles
+                         on user.Id equals userRole.UserId
+                         join role in _context.Roles
+                         on userRole.RoleId equals role.Id
+                         where role.Name == roleName
+                         select user).Where(e => e.ApartCodeName == apartCode).ToList();
+
+            }
+
+            BroadCast nB = new BroadCast();
+
+            foreach (var item in users)
+            {
+                string e_mobile = item.Mobile;
+                string e_mail = item.Email;
+
+                if (msgType == "Email")
+                {
+                    nB.sendBroadCastMail(msgType, e_mail, textBody, emailSubject, attachedFile);
+                }
+                if (msgType == "SMS")
+                {
+                    nB.sendBroadCastSMS(msgType, e_mobile, textBody);
+                }
+                else if (msgType == "All")
+                {
+                    nB.sendBroadCastMail("Email", e_mail, textBody, emailSubject, attachedFile);
+                    nB.sendBroadCastSMS("SMS", e_mobile, textBody);
+                }
+            }
+
+        }
+
+        
+
+
         public void SendNotification(string msgType, string roleName, string textBody, string emailSubject, string attachedFile="")
         {
            var users = (from user in _context.Users
@@ -109,7 +165,25 @@ namespace FlatManagement.Utility
 
         }
 
-       
+
+        public void OwnerNotification(string flatNo, string apartCode, string textBody, string emailSubject, string attachedFile = "")
+        {
+            var flatVar = _context.Users
+                                               .Where(p => p.Flat_No == flatNo && p.ApartCodeName== apartCode)
+                                               .Select(p => new { p.Mobile, p.Email, p.Flat_No }).ToList();
+            BroadCast nB = new BroadCast();
+            foreach (var item in flatVar)
+            {
+                var e_mail = item.Email;
+                var e_mobile = item.Mobile;
+
+                nB.sendBroadCastMail("Email", e_mail, textBody, emailSubject, attachedFile);
+                nB.sendBroadCastSMS("SMS", e_mobile, textBody);
+            }
+
+        }
+
+
         public void OwnerNotification(string flatNo, string textBody, string emailSubject, string attachedFile = "")
         {
             var flatVar = _context.Users

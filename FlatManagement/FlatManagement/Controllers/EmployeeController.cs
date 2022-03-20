@@ -9,6 +9,7 @@ using FlatManagement.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FlatManagement.Controllers
 {
@@ -17,18 +18,39 @@ namespace FlatManagement.Controllers
         private readonly FlatDBContext _context;
        
         private readonly IWebHostEnvironment _hostingEnvironment;
-
+               
         public EmployeeController(FlatDBContext context, IWebHostEnvironment hostingEnvironment)
         {
             _context = context;
             _hostingEnvironment = hostingEnvironment;
+            
+
+            //if (!HttpContext.Request.Cookies.ContainsKey("COMCODE"))
+            //{
+            //    COMCODE = HttpContext.Request.Cookies["COMCODE"];
+            //    COMNAME = HttpContext.Request.Cookies["COMNAME"];
+            //    COMLOGO = HttpContext.Request.Cookies["COMLOGO"];
+            //}
+            //else
+            //{
+            //    COMCODE = HttpContext.Session.GetString(APARTCODEVAR);
+            //    COMNAME = HttpContext.Session.GetString(APARTCOMPANYNAME);
+            //    COMLOGO = HttpContext.Session.GetString(APARTCOMPANYLOGO);
+            //}
+
+
+
+            //APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];// HttpContext.Session.GetString(APARTCODEVAR);
         }
-       
+
 
         // GET: Employee
+        [Authorize]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Employees.ToListAsync());
+            var userId = HttpContext.Request.Cookies["user_id"];
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            return View(await _context.Employees.Where(e=>e.ApartCodeName==APART_CODE_LOCAL_VAR).ToListAsync());
         }
 
 
@@ -45,10 +67,11 @@ namespace FlatManagement.Controllers
 
 
         // GET: Employee/Create
+        [Authorize]
         public IActionResult AddOrEdit(int id = 0)
         {
-
-            var empTYpe = (from b in _context.EnumValues.Where(b => b.Value.Contains("EMPLOYEE_TYPE"))
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            var empTYpe = (from b in _context.EnumValues.Where(b => b.Value.Contains("EMPLOYEE_TYPE") && b.ApartCodeName== APART_CODE_LOCAL_VAR)
                            select new SelectListItem()
                            {
                                Value = b.EnumText.ToString(),
@@ -72,7 +95,8 @@ namespace FlatManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddOrEdit(EmployeeVM employeeVM, IFormFile uploadFile)
         {
-
+            //            var userId = HttpContext.Request.Cookies["user_id"];
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
             //employeeVM.PicLoc = "no_image.png";
 
             //employeeVM.PicLoc = "no_image.png";
@@ -109,6 +133,7 @@ namespace FlatManagement.Controllers
 
             employeeVM.EntryBy = User.Identity.IsAuthenticated ? HttpContext.User.Identity.Name : "-";
             employeeVM.EntryDate = DateTime.Now;
+            employeeVM.ApartCodeName = APART_CODE_LOCAL_VAR;
             //else
             //{
             //    employeeVM.PicLoc = "no_image.png";

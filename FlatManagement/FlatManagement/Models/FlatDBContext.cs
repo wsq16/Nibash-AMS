@@ -31,7 +31,7 @@ namespace FlatManagement.Models
         public DbSet<EnumModel> EnumValues { get; set; }
         public DbSet<EmployeeVM> Employees { get; set; }
         //Remove
-        public DbSet<FlatVM> Flats { get; set; }
+        //public DbSet<FlatVM> Flats { get; set; }
         public DbSet<TenantVM> Tenants { get; set; }
         //End Remove
         public DbSet<ServiceVM> Services { get; set; }
@@ -50,6 +50,27 @@ namespace FlatManagement.Models
         public DbSet<ProcessVM> Processes { get; set; }
         public DbSet<DelegatePersonHistory> DelegatePersonHistorys { get; set; }
         public DbSet<CompanyVM> CompanyInfo { get; set; }
+        public DbSet<AdvancedVM> Advanceds { get; set; }
+        public DbSet<ReceiveVM> Receives { get; set; }
+
+
+
+
+        /**
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<CompanyVM>(entity => {
+                entity.HasIndex(e => e.CodeName).IsUnique();
+            });
+
+            
+            modelBuilder.Entity<CompanyVM>()
+                .HasIndex(p => new { p.CompanyShortName, p.LastName })
+                .IsUnique(true);
+            
+           
+        }
+    */
 
     }
 }

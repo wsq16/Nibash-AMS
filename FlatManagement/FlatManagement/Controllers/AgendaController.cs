@@ -22,27 +22,31 @@ namespace FlatManagement.Controllers
         private readonly FlatDBContext _context;
         private IWebHostEnvironment webHostEnvironment;
         public IConfiguration _configuration;
-
+        String APART_CODE_LOCAL_VAR = "";
 
         public AgendaController(IConfiguration configuration, FlatDBContext context, IWebHostEnvironment _webHostEnvironment)
         {
             _configuration = configuration;
             webHostEnvironment = _webHostEnvironment;
             _context = context;
+            
+
         }
         // GET: Bill
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Agendas.ToListAsync());
+            APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            return View(await _context.Agendas.Where(e => e.ApartCodeName == APART_CODE_LOCAL_VAR).ToListAsync());
         }
 
         // GET: Bill/Create
         public IActionResult AddOrEdit(int id=0)
         {
+            APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
             //AgendaVM agendaVMObj = new AgendaVM();
             //agendaVMObj.invitePersons = PopulateFlatOwners();
 
-            var usersList = (from users in _context.Users.Where(p => p.Tenant == false)
+            var usersList = (from users in _context.Users.Where(p => p.Tenant == false && p.ApartCodeName== APART_CODE_LOCAL_VAR)
                              select new SelectListItem()
                              {
                                  Value = users.UserName.ToString(),
@@ -77,8 +81,10 @@ namespace FlatManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddOrEdit(AgendaVM agenda, IFormFile FileAttachment)
         {
+            APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
             try
             {
+                agenda.ApartCodeName = APART_CODE_LOCAL_VAR;
                 string uniqueFileName = null;
                 if (FileAttachment != null && FileAttachment.Length > 0)
                 {
@@ -153,6 +159,7 @@ namespace FlatManagement.Controllers
         [HttpGet]
         public IActionResult Invitation(string AgendaId, string AgendaDetails, string AgendaAttachment, string AgendaDate, string AgendaName)
         {
+            APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
             ViewBag.AgendaId = AgendaId;
             ViewBag.AgendaDetails = AgendaDetails;
             ViewBag.AgendaAttachment = AgendaAttachment;
@@ -169,6 +176,7 @@ namespace FlatManagement.Controllers
         [HttpPost]
         public IActionResult SendInvitation(string AgendaId, string AgendaDetails, string AgendaAttachment, string AgendaDate, string AgendaName, string[] flatOwnerList)
         {
+            APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
             ViewBag.Message = "Message sent to:\\n";
             List<SelectListItem> items = PopulateFlatOwners();
             var path = "";
@@ -193,14 +201,13 @@ namespace FlatManagement.Controllers
 
                 if (AgendaAttachment!=null)
                 {
-                    
                     path = Path.Combine(webHostEnvironment.WebRootPath, "Files", AgendaAttachment);
                     mail.Attachments.Add(new Attachment(path));
                 }
 
                 using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
                 {
-                    smtp.Credentials = new NetworkCredential("jubayer.ah@gmail.com", "aqftzxebzqizorae");
+                    smtp.Credentials = new NetworkCredential("elongatesdev@gmail.com", "aqitzohxddzutnve");
                     smtp.EnableSsl = true;
                     smtp.Send(mail);
                 }
@@ -259,12 +266,13 @@ namespace FlatManagement.Controllers
 
         public List<SelectListItem> PopulateFlatOwners()
         {
+            APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
             string constr = _configuration.GetConnectionString("DBConnectionString");
 
             List<SelectListItem> items = new List<SelectListItem>();
             using (SqlConnection con = new SqlConnection(constr))
             {
-                string query = " SELECT FirstName, Email FROM AspNetUsers";
+                string query = " SELECT FirstName, Email FROM AspNetUsers WHERE ApartCodeName='"+ APART_CODE_LOCAL_VAR + "'";
                 using (SqlCommand cmd = new SqlCommand(query))
                 {
                     cmd.Connection = con;

@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Http;
 
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
@@ -72,10 +73,25 @@
         <div class="container d-flex justify-content-center justify-content-md-between">
 
             <div class="contact-info d-flex align-items-center">
+                @Context.Request.Cookies["COMNAME"]
                 @*
-                  <i class="bi bi-envelope-fill"></i><a href="mailto:contact@example.com">info@example.com</a>
-                  <i class="bi bi-phone-fill phone-icon"></i> +1 5589 55488 55
-                 *@
+                @{
+
+                    if (HttpContext.Request.Cookies["menuSize"].Value == "Large")
+                    {
+                        <style>
+                            LARGE STYLES
+                        </style>
+                    }
+
+                }
+
+
+                @ViewBag.CompanyName
+
+        <i class="bi bi-envelope-fill"></i><a href="mailto:contact@example.com">info@example.com</a>
+        <i class="bi bi-phone-fill phone-icon"></i> +1 5589 55488 55
+                *@
             </div>
 
 
@@ -111,55 +127,51 @@
             @if (SignInManager.IsSignedIn(User))
             {
                 <a class=" navbar-brand no-print" asp-controller="home" asp-action="index">
-                    <img src="~/images/logo.jpg" width="30" height="30" />
+                    @if (@ViewBag.CodeName == "")
+                    {
+                        <img src="~/assets/icons/no_image_apartment.png" width="30" height="30" />
+                    }
+                    else if (@ViewBag.CodeName != "")
+                    {
+                        <img src="~/images/@Context.Request.Cookies["COMLOGO"]" width="30" height="30" alt="@Context.Request.Cookies["COMNAME"]" />     @*ViewBag.CompanyLogo*@
+                    }
+
                 </a>
             }
             else
             {
                 <a class=" navbar-brand no-print" asp-controller="Account" asp-action="Login">
-                    <img src="~/images/logo.jpg" width="30" height="30" />
+                    <img src="~/assets/icons/no_image_apartment.png" width="30" height="30" />
                 </a>
             }
             <!-- Uncomment below if you prefer to use an image logo -->
             <!-- <a href="index.html" class="logo"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
 
-            <nav id="navbar" class="navbar">
-                <ul>
+        <nav id="navbar" class="navbar">
+            <ul>
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <li><a class="nav-link  scrollto" asp-controller="Home" asp-action="index">Dashboard</a></li>
                     @*<li><a class="nav-link scrollto active" asp-controller="Home" asp-action="index">Home</a></li>*@
-                    @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Supervisor")))
-                    {
-                        <li class="dropdown">
-                            <a href="#"><span> Master File</span> <i class="bi bi-chevron-down"></i></a>
-                            <ul>
-                                <li><a class="nav-link" asp-controller="Employee" asp-action="index">Employee</a></li>
-
-                                @*<li><a class="nav-link" asp-controller="Owner">Owner</a></li>
-                                <li><a class="nav-link" asp-controller="Tenant">Tenant</a></li>*@
-                                <li><a class="nav-link" asp-controller="Contract" asp-action="index">Contracts</a></li>
-                                @*<li><a class="nav-link" asp-controller="Committee">Committee</a></li>*@
-                                <li><a class="nav-link" asp-controller="Service" asp-action="index">Service</a></li>
-                                <li><a class="nav-link" asp-controller="Supplier" asp-action="index">Supplier</a></li>
-                                <li><a class="nav-link" asp-controller="EnumValues" asp-action="index">General Entry</a></li>
-                                @*<li><a class="nav-link" asp-controller="Flat">Flat Configuration</a></li>*@
-                            <li><a asp-controller="ApprovalLimit" asp-action="index">Approval Config Master</a></li>
-                                <li><a class="nav-link" asp-controller="FlatConfig" asp-action="index">Flat Configuration</a></li>
-
-                            </ul>
-                        </li>
-                    }
+                }
 
                     @if (SignInManager.IsSignedIn(User) && User.IsInRole("FlatOwner"))
                     {
                         <li><a class="nav-link  scrollto" asp-controller="bill" asp-action="index">Bill</a></li>
                     }
-
+                    @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Supervisor")))
+                    {
+                        <li><a class="nav-link scrollto " asp-controller="Bill" asp-action="index">Bill</a></li>
+                    }
                     @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Supervisor") || User.IsInRole("Treasurer") || User.IsInRole("Committee") || User.IsInRole("FlatOwner")))
                     {
                         <li class="dropdown">
                             <a href="#"><span>Fund Management</span> <i class="bi bi-chevron-down"></i></a>
                             <ul>
                                 <li><a asp-controller="CommonFund" asp-action="index">Common Fund Management(Fund Collection)</a></li>
-                                <li><a asp-controller="Process" asp-action="index">Expenses/Receive/Advance</a></li>
+                                <li><a asp-controller="Process" asp-action="index">Expenses/Receive</a></li>
+                                <li><a asp-controller="AdvancedPayment" asp-action="index">Advance</a></li>
+                                @*<li><a asp-controller="Receive" asp-action="index">Receive</a></li>*@
                                 @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
                                 {
                                     <li><a asp-controller="Process" asp-action="GetSplitListIndex">Split Request</a></li>
@@ -167,11 +179,11 @@
 
 
                                 @*<li><a asp-controller="CommonFund" asp-action="index">Common Fund Management(Fund Collection)</a></li>
-                                <li><a asp-controller="Transaction" asp-action="index">Expenses/Receive/Advance</a></li>
-                                @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
-                                {
-                                    <li><a asp-controller="Transaction" asp-action="GetSplitListIndex">Split Request</a></li>
-                                }*@
+        <li><a asp-controller="Transaction" asp-action="index">Expenses/Receive/Advance</a></li>
+        @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+        {
+            <li><a asp-controller="Transaction" asp-action="GetSplitListIndex">Split Request</a></li>
+        }*@
                             </ul>
                         </li>
                     }
@@ -186,6 +198,8 @@
                                 <li><a asp-controller="Resolution" asp-action="index">Resolution/Status</a></li>
                             </ul>
                         </li>
+                        <li><a class="nav-link scrollto" asp-controller="Maintenance" asp-action="index">Maintenance</a></li>
+
                         <li class="dropdown">
                             <a href="#"><span>Messages</span> <i class="bi bi-chevron-down"></i></a>
                             <ul>
@@ -193,14 +207,30 @@
                             </ul>
                         </li>
 
-                        <li><a class="nav-link scrollto" asp-controller="Maintenance" asp-action="index">Maintenance</a></li>
+
+                    }
+
+                    @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Supervisor")))
+                    {
+                        <li class="dropdown">
+                            <a href="#"><span> Settings</span> <i class="bi bi-chevron-down"></i></a>
+                            <ul>
+                                <li><a class="nav-link" asp-controller="Employee" asp-action="index">Employee</a></li>
+                                <li><a class="nav-link" asp-controller="Contract" asp-action="index">Contracts</a></li>
+                                <li><a class="nav-link" asp-controller="Service" asp-action="index">Service</a></li>
+                                <li><a class="nav-link" asp-controller="Supplier" asp-action="index">Supplier</a></li>
+                                <li><a class="nav-link" asp-controller="EnumValues" asp-action="index">General Entry</a></li>
+                                <li><a asp-controller="ApprovalLimit" asp-action="index">Approval Config Master</a></li>
+                                <li><a class="nav-link" asp-controller="FlatConfig" asp-action="index">Flat Configuration</a></li>
+                                <li><a asp-controller="Administration" asp-action="ListUsers"> Users </a></li>
+                            </ul>
+                        </li>
                     }
 
                     @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Supervisor")))
                     {
                         <li><a class="nav-link scrollto " asp-controller="FAQ" asp-action="index">FAQ</a></li>
-                        <li><a class="nav-link scrollto " asp-controller="Bill" asp-action="index">Bill</a></li>
-                        @*<li><a class="nav-link scrollto" href="#pricing">Reports</a></li>*@
+
                     }
                     else
                     {
@@ -208,26 +238,26 @@
                     }
 
                     @*@if (SignInManager.IsSignedIn(User) && (User.IsInRole("FlatOwner")))
-                {
-                    <li><a class="nav-link scrollto " asp-controller="FAQ" asp-action="index">FAQ</a></li>
-                }*@
+            {
+                <li><a class="nav-link scrollto " asp-controller="FAQ" asp-action="index">FAQ</a></li>
+            }
 
-                    @if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
-                    {
-                        <li class="dropdown">
-                            <a href="#"><span>Manage</span> <i class="bi bi-chevron-down"></i></a>
-                            <ul>
-                                <li><a asp-controller="Administration" asp-action="ListUsers"> Users </a></li>
-                                <li><a asp-controller="Administration" asp-action="ListRoles"> Roles </a></li>
-                            </ul>
-                        </li>
-                    }
+                        @if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                        {
+                            <li class="dropdown">
+                                <a href="#"><span>Manage</span> <i class="bi bi-chevron-down"></i></a>
+                                <ul>
+                                    <li><a asp-controller="Administration" asp-action="ListUsers"> Users </a></li>
+
+            </ul>
+            </li>
+            }*@
 
 
 
                 </ul>
-                <i class="bi bi-list mobile-nav-toggle no-print"></i>
-            </nav><!-- .navbar -->
+            <i class="bi bi-list mobile-nav-toggle no-print"></i>
+        </nav><!-- .navbar -->
 
         </div>
     </header><!-- End Header -->

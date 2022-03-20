@@ -31,5 +31,8 @@ namespace FlatManagement.Models
         [DisplayFormat(DataFormatString = "{0:dd'/'MM'/'yyyy}", ApplyFormatInEditMode = true)]
         public DateTime Date { get; set; }
 
+        [DisplayName("Code")]
+        public string ApartCodeName { get; set; }
+
     }
 }

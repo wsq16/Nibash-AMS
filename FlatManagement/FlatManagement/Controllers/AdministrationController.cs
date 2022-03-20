@@ -36,10 +36,12 @@ namespace FlatManagement.Controllers
         [HttpGet]
         public IActionResult ListUsers()
         {
-            var users = userManager.Users;
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            var users = userManager.Users.Where(u=>u.ApartCodeName== APART_CODE_LOCAL_VAR && u.IsActive== true);
             return View(users);
         }
 
+        
 
         [HttpGet]
         public IActionResult CreateRole()
@@ -241,8 +243,8 @@ namespace FlatManagement.Controllers
         [HttpGet]
         public async Task<IActionResult> EditUser(string id)
         {
-
-            var usersList = (from users in _context.Users.Where(p => p.Tenant == false)
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            var usersList = (from users in _context.Users.Where(p => p.ApartCodeName== APART_CODE_LOCAL_VAR && p.Tenant == false && p.IsActive==true)
                              select new SelectListItem()
                              {
                                  Value = users.UserName.ToString(),
@@ -296,6 +298,7 @@ namespace FlatManagement.Controllers
         [HttpPost]
         public async Task<IActionResult> EditUser(EditUserViewModel model)
         {
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
             var user = await userManager.FindByIdAsync(model.Id);
 
             if (user == null)
@@ -319,7 +322,7 @@ namespace FlatManagement.Controllers
                 user.FlatOwner = model.FlatOwner;
                 user.NID = model.NID;
                 user.Per_Address = model.Per_Address;
-
+                user.ApartCodeName = APART_CODE_LOCAL_VAR;
 
 
 
@@ -472,11 +475,21 @@ namespace FlatManagement.Controllers
         }
 
 
+
+        [HttpGet]
+        public IActionResult ListUsersDev()
+        {
+            var users = userManager.Users.Where(u=>u.Flat_No=="-");
+            return View(users);
+        }
+
+        [Route("console")]
         [Route("admin")]
         [Route("install")]
         [Route("setup")]
         [Route("config")]
         [Route("nibash")]
+        [Route("Administrator")]
         [Route("Administrator/install")]
         [Route("Administrator/setup")]
         [Route("Administrator/config")]
@@ -486,6 +499,11 @@ namespace FlatManagement.Controllers
         {
             return View();
         }
+
+
+        
+
+
 
     }
 }

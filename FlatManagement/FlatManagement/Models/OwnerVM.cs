@@ -60,5 +60,8 @@ namespace FlatManagement.Models
         [DisplayName("Tenant")]
         public bool Tenant { get; set; }
 
+        [DisplayName("Code")]
+        public string ApartCodeName { get; set; }
+
     }
 }

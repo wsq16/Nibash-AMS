@@ -34,13 +34,13 @@ namespace FlatManagement.Models
         [DisplayName("Designation")]
         public string Designation { get; set; }
 
-        [Required(ErrorMessage = "The email address is required")]
+        
         [EmailAddress(ErrorMessage = "Invalid Email Address")]
         [Column(TypeName = "nvarchar(50)")]
         [DisplayName("Email")]
         public string Email { get; set; }
 
-       
+        [Required(ErrorMessage = "NID is required")]
         [Column(TypeName = "nvarchar(50)")]
         [DisplayName("NID")]
         public string EmpNID { get; set; }
@@ -75,6 +75,9 @@ namespace FlatManagement.Models
         [DisplayName("Image")]
         [Column(TypeName = "nvarchar(150)")]
         public string PicLoc { get; set; }
+
+        [DisplayName("Code")]
+        public string ApartCodeName { get; set; }
 
         //[Column(TypeName = "nvarchar(100)")]
         //[DisplayName("Image Name")]

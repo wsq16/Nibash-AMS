@@ -43,5 +43,8 @@ namespace FlatManagement.Models
         [DisplayName("Attachment")]
         [Column(TypeName = "nvarchar(50)")]
         public string Attachment { get; set; }
+
+        [DisplayName("Code")]
+        public string ApartCodeName { get; set; }
     }
 }

@@ -17,6 +17,8 @@ namespace FlatManagement.Controllers
     {
         private readonly FlatDBContext _context;
         private readonly IWebHostEnvironment _hostingEnvironment;
+        
+
         public ServiceController(FlatDBContext context, IWebHostEnvironment hostingEnvironment)
         {
             _context = context;
@@ -26,7 +28,8 @@ namespace FlatManagement.Controllers
         // GET: Flat
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Services.ToListAsync());
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            return View(await _context.Services.Where(e => e.ApartCodeName == APART_CODE_LOCAL_VAR).ToListAsync());
         }
 
 
@@ -34,7 +37,8 @@ namespace FlatManagement.Controllers
         // GET: Flat/Create
         public IActionResult AddOrEdit(int id = 0)
         {
-            var billType = (from b in _context.EnumValues.Where(b => b.Value.Contains("BILL_TYPE"))
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            var billType = (from b in _context.EnumValues.Where(b => b.Value.Contains("BILL_TYPE") && b.ApartCodeName == APART_CODE_LOCAL_VAR)
                             select new SelectListItem()
                             {
                                 Value = b.EnumText.ToString(),
@@ -57,6 +61,7 @@ namespace FlatManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddOrEdit(ServiceVM serviceVM, List<IFormFile> files)
         {
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
             try
             {
                 if (files != null)
@@ -112,6 +117,8 @@ namespace FlatManagement.Controllers
             {
                 Console.WriteLine("Error in file upload:" + ex.ToString());
             }
+
+            serviceVM.ApartCodeName = APART_CODE_LOCAL_VAR;
 
             ModelState.Clear();
             if (ModelState.IsValid)

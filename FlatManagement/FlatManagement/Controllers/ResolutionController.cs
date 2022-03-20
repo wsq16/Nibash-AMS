@@ -1,5 +1,6 @@
 ﻿using FlatManagement.Models;
 using FlatManagement.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +27,7 @@ namespace FlatManagement.Controllers
         private readonly FlatDBContext _context;
         private IWebHostEnvironment webHostEnvironment;
         public IConfiguration _configuration;
+        String APART_CODE_LOCAL_VAR = "";
 
         public ResolutionController(FlatDBContext context, IWebHostEnvironment _webHostEnvironment, IConfiguration configuration)
         {
@@ -34,16 +36,19 @@ namespace FlatManagement.Controllers
             _configuration = configuration;
         }
         // GET: Bill
+        [Authorize]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Resolutions.ToListAsync());
+            APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            return View(await _context.Resolutions.Where(e => e.ApartCodeName == APART_CODE_LOCAL_VAR).ToListAsync());
         }
 
         // GET: Bill/Create
+        [Authorize]
         public IActionResult AddOrEdit(int id = 0)
         {
-
-            var usersList = (from users in _context.Users
+            APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            var usersList = (from users in _context.Users.Where(users => users.ApartCodeName == APART_CODE_LOCAL_VAR)
                              select new SelectListItem()
                              {
                                  Value = users.UserName.ToString(),
@@ -51,7 +56,7 @@ namespace FlatManagement.Controllers
                              }).ToList();
             ViewBag.Responsibility = usersList;
 
-            var usersListEmployee = (from userEmp in _context.Employees
+            var usersListEmployee = (from userEmp in _context.Employees.Where(c => c.ApartCodeName == APART_CODE_LOCAL_VAR)
                                      select new SelectListItem()
                                      {
                                          Value = userEmp.Id.ToString(),
@@ -59,7 +64,7 @@ namespace FlatManagement.Controllers
                                      }).ToList();
             ViewBag.ResponsibilityEmployee = usersListEmployee;
 
-            var agendaList = (from c in _context.Agendas
+            var agendaList = (from c in _context.Agendas.Where(c =>c.ApartCodeName == APART_CODE_LOCAL_VAR)
                               select new SelectListItem()
                               {
                                   Value = c.AgendaName.ToString(),
@@ -81,12 +86,15 @@ namespace FlatManagement.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> AddOrEdit(ResolutionVM resoObj, string startTime, string endTime, IFormFile Attachment)
         {
+            APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            var APART_APART_LOCAL_VAR = HttpContext.Request.Cookies["COMNAME"];
             var filePath = "";
             resoObj.startTime = startTime;
             resoObj.endTime = endTime;
-
+            resoObj.ApartCodeName = APART_CODE_LOCAL_VAR;
             ModelState.Clear();
             if (ModelState.IsValid)
             {
@@ -114,44 +122,28 @@ namespace FlatManagement.Controllers
 
                 try
                 {
-                    //var ResponsibilityFlatOwner = _context.Users
-                    //                                               .Where(p => p.UserName == resoObj.ResponsibilityFlatOwner)
-                    //                                               .Select(p => p.Email).FirstOrDefault();
-
-                    //string emailSubject = "A Bill Created";
-                    //string smsBody = "Meeting Responsibility Initiated. Please login to system for details.";
-                    //BroadCast nB = new BroadCast();
-                    //nB.sendBroadCastMail("Email", ResponsibilityFlatOwner, smsBody, emailSubject);
-
-
-
-                    //var ResponsibilityEmplloyee = _context.Employees
-                    //                            .Where(p => p.Id == Convert.ToInt32(resoObj.ResponsibilityEmployee))
-                    //                            .Select(p => p.Email).FirstOrDefault();
-
-                    //string emailSubjectEmplloyee = "Meeting Responsibility ";
-                    //string smsBodyEmplloyee = "Meeting Responsibility Initiated. Please login to system for details.";
-                    //BroadCast mailObj = new BroadCast();
-                    //mailObj.sendBroadCastMail("Email", ResponsibilityEmplloyee, smsBodyEmplloyee, emailSubjectEmplloyee);
-                    //StringBuilder stringBuilder = new StringBuilder();
-                    //stringBuilder.Append("Hello, "+);
-                    //stringBuilder.ToString();
-
                     if (resoObj.Attachment != "")
                     {
                         string uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, "Files");
                         filePath = Path.Combine(uploadsFolder, resoObj.Attachment);
                     }
 
+
                     int e_id = Convert.ToInt32(resoObj.ResponsibilityEmployee);
-                    var GetEmployee = _context.Employees
-                                               .Where(p => p.Id == e_id)
-                                               .Select(p => p.Email).First();
+                    var GetEmployee = "";
+                    if (e_id > 0)
+                    {
+                        GetEmployee = _context.Employees
+                                                   .Where(p => p.Id == e_id && p.ApartCodeName == APART_CODE_LOCAL_VAR)
+                                                   .Select(p => p.Email).First();
+                        resoObj.ResponsibilityEmployeeName = GetEmployee;
+                    }
+
 
                     string textBody = "";
                     textBody += "Meeting Resolution On " + resoObj.AgendaName + " Point(s): " + resoObj.PointNo + " Start Date " + resoObj.StartDate + " Time " + resoObj.startTime;
                     textBody += " End Date: " + resoObj.DueDate + " Time:" + resoObj.endTime + " Note: " + resoObj.Resolution + " Closing Note: " + resoObj.ResolutionClosingNote + " Responsible Person[Flat Owner]: " + resoObj.ResponsibilityFlatOwner;
-                    textBody += " Responsible Person: " + GetEmployee + " Status: " + resoObj.Status;
+                    textBody += " Responsible Person: " + GetEmployee + " Status: " + resoObj.Status+" Thanks -"+ APART_APART_LOCAL_VAR;
 
                     string textSubject = resoObj.AgendaName;
 
@@ -160,22 +152,22 @@ namespace FlatManagement.Controllers
                     {
                         if (resoObj.to_Committee == true)
                         {   
-                            SNMObj.SendNotification("SMS","Committee", textBody, textSubject, filePath);                            
+                            SNMObj.SendNotification("SMS","Committee", APART_CODE_LOCAL_VAR, textBody, textSubject, filePath);                            
                         }
 
                         if (resoObj.to_Treasurer == true)
                         {
-                            SNMObj.SendNotification("SMS","Treasurer", textBody, textSubject, filePath);
+                            SNMObj.SendNotification("SMS","Treasurer", APART_CODE_LOCAL_VAR, textBody, textSubject, filePath);
                         }
 
                         if (resoObj.to_FlatOwner == true)
                         {
-                            SNMObj.SendNotification("SMS", "FlatOwner", textBody, textSubject, filePath);
+                            SNMObj.SendNotification("SMS", "FlatOwner", APART_CODE_LOCAL_VAR, textBody, textSubject, filePath);
                         }
 
                         if (resoObj.to_All == true)
                         {
-                            SNMObj.SendNotification("SMS", "", textBody, textSubject, filePath);
+                            SNMObj.SendNotification("SMS", "", APART_CODE_LOCAL_VAR, textBody, textSubject, filePath);
                         }
 
                     }
@@ -183,22 +175,22 @@ namespace FlatManagement.Controllers
                     {
                         if (resoObj.to_Committee == true)
                         {
-                            SNMObj.SendNotification("Email", "Committee", textBody, textSubject, filePath);
+                            SNMObj.SendNotification("Email", "Committee", APART_CODE_LOCAL_VAR, textBody, textSubject, filePath);
                         }
 
                         if (resoObj.to_Treasurer == true)
                         {
-                            SNMObj.SendNotification("Email", "Treasurer", textBody, textSubject, filePath);
+                            SNMObj.SendNotification("Email", "Treasurer", APART_CODE_LOCAL_VAR, textBody, textSubject, filePath);
                         }
 
                         if (resoObj.to_FlatOwner == true)
                         {
-                            SNMObj.SendNotification("Email", "FlatOwner", textBody, textSubject, filePath);
+                            SNMObj.SendNotification("Email", "FlatOwner", APART_CODE_LOCAL_VAR, textBody, textSubject, filePath);
                         }
 
                         if (resoObj.to_All == true)
                         {
-                            SNMObj.SendNotification("Email", "", textBody, textSubject, filePath);
+                            SNMObj.SendNotification("Email", "", APART_CODE_LOCAL_VAR, textBody, textSubject, filePath);
                         }
                     }
                     
@@ -206,74 +198,29 @@ namespace FlatManagement.Controllers
                     {
                         if (resoObj.to_Committee == true)
                         {
-                            SNMObj.SendNotification("SMS", "Committee", textBody, textSubject, filePath);
-                            SNMObj.SendNotification("Email", "Committee", textBody, textSubject, filePath);
+                            SNMObj.SendNotification("SMS", "Committee", APART_CODE_LOCAL_VAR, textBody, textSubject, filePath);
+                            SNMObj.SendNotification("Email", "Committee", APART_CODE_LOCAL_VAR, textBody, textSubject, filePath);
                         }
 
                         if (resoObj.to_Treasurer == true)
                         {
-                            SNMObj.SendNotification("SMS", "Treasurer", textBody, textSubject, filePath);
-                            SNMObj.SendNotification("Email", "Treasurer", textBody, textSubject, filePath);
+                            SNMObj.SendNotification("SMS", "Treasurer", APART_CODE_LOCAL_VAR, textBody, textSubject, filePath);
+                            SNMObj.SendNotification("Email", "Treasurer", APART_CODE_LOCAL_VAR, textBody, textSubject, filePath);
                         }
 
                         if (resoObj.to_FlatOwner == true)
                         {
-                            SNMObj.SendNotification("SMS", "FlatOwner", textBody, textSubject, filePath);
-                            SNMObj.SendNotification("Email", "FlatOwner", textBody, textSubject, filePath);
+                            SNMObj.SendNotification("SMS", "FlatOwner", APART_CODE_LOCAL_VAR, textBody, textSubject, filePath);
+                            SNMObj.SendNotification("Email", "FlatOwner", APART_CODE_LOCAL_VAR, textBody, textSubject, filePath);
                         }
 
                         if (resoObj.to_All == true)
                         {
-                            SNMObj.SendNotification("SMS", "All", textBody, textSubject, filePath);
-                            SNMObj.SendNotification("Email", "All", textBody, textSubject, filePath);
+                            SNMObj.SendNotification("SMS", "All", APART_CODE_LOCAL_VAR, textBody, textSubject, filePath);
+                            SNMObj.SendNotification("Email", "All", APART_CODE_LOCAL_VAR, textBody, textSubject, filePath);
                         }
                     }
                     
-
-
-
-
-
-                    //List<SelectListItem> items = PopulateFlatOwners();
-
-                    //using (MailMessage mail = new MailMessage())
-                    //{
-                    //    mail.From = new MailAddress("jubayer.ah@gmail.com");
-
-                    //    foreach (SelectListItem item in items)
-                    //    {     
-                    //        mail.To.Add(item.Value);                            
-                    //    }
-
-                    //    mail.Subject = resoObj.AgendaName;
-                    //    mail.Body = AgendaDetailsBody;
-                    //    mail.IsBodyHtml = true;
-
-                    //    if (Attachment != null)
-                    //    {
-
-                    //        path = Path.Combine(webHostEnvironment.WebRootPath, "Files", Attachment.FileName);
-                    //        mail.Attachments.Add(new Attachment(path));
-                    //    }
-
-                    //    using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
-                    //    {
-                    //        smtp.Credentials = new NetworkCredential("jubayer.ah@gmail.com", "aqftzxebzqizorae");
-                    //        smtp.EnableSsl = true;
-                    //        smtp.Send(mail);
-                    //    }
-                    //}
-
-                    ///Send SMS
-                    ///
-                    //List<SelectListItem> itemsMobNumbers = GetFlatOwnersMobileNum();
-                    //foreach (SelectListItem item in itemsMobNumbers)
-                    //{
-                    //    BroadCast mailObj = new BroadCast();
-                    //    mailObj.sendBroadCastSMS("SMS", item.Value, AgendaDetailsBody);
-                    //}
-
-
                 }
             catch (Exception ex)
             {
@@ -292,7 +239,7 @@ namespace FlatManagement.Controllers
             return View(resoObj);
         }
 
-
+        [Authorize]
         public IActionResult SendMessages(int id = 0)
         {
             if (id == 0)
@@ -304,6 +251,7 @@ namespace FlatManagement.Controllers
         }
 
         // GET: Bill/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -318,6 +266,7 @@ namespace FlatManagement.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> UploadFile(IFormFile FormFile)
         {
             var filename = ContentDispositionHeaderValue.Parse(FormFile.ContentDisposition).FileName.Trim('"');
@@ -331,12 +280,13 @@ namespace FlatManagement.Controllers
 
         public List<SelectListItem> PopulateFlatOwners()
         {
+            APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
             string constr = _configuration.GetConnectionString("DBConnectionString");
 
             List<SelectListItem> items = new List<SelectListItem>();
             using (SqlConnection con = new SqlConnection(constr))
             {
-                string query = " SELECT FirstName, Email FROM AspNetUsers";
+                string query = " SELECT FirstName, Email FROM AspNetUsers WHERE ApartCodeName='" + APART_CODE_LOCAL_VAR + "'  AND IsActive='true'";
                 using (SqlCommand cmd = new SqlCommand(query))
                 {
                     cmd.Connection = con;
@@ -361,12 +311,13 @@ namespace FlatManagement.Controllers
 
         public List<SelectListItem> GetFlatOwnersMobileNum()
         {
+            APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
             string constr = _configuration.GetConnectionString("DBConnectionString");
 
             List<SelectListItem> items = new List<SelectListItem>();
             using (SqlConnection con = new SqlConnection(constr))
             {
-                string query = " SELECT FirstName, Mobile FROM AspNetUsers";
+                string query = " SELECT FirstName, Mobile FROM AspNetUsers WHERE ApartCodeName='" + APART_CODE_LOCAL_VAR + "'  AND IsActive='true'";
                 using (SqlCommand cmd = new SqlCommand(query))
                 {
                     cmd.Connection = con;

@@ -50,20 +50,28 @@
             </div>
 
             <div class="form-row">
-                <div class="form-group  col-md-6">
+                <div class="form-group  col-md-4">
                     @Html.LabelFor(m => m.Year, new { @class = "control-label" })<span>*</span>
                     <select asp-for="Year" name="Year" class="form-control" asp-items="@ViewBag.Years"></select>
                     @*@Html.DropDownListFor(model => model.Year, (IEnumerable<SelectListItem>)ViewBag.Years, "Year", new { @class = "form-control" })*@
                     @Html.ValidationMessageFor(m => m.Year)
                 </div>
-                <div class="form-group  col-md-6">
+
+                <div class="form-group  col-md-4">
                     @Html.LabelFor(m => m.CollectionDate, new { @class = "control-label" })<span>*</span>
                     @*@Html.TextBoxFor(m => m.CollectionDate, new { @class = "form-control" })*@
                     @Html.TextBoxFor(m => m.CollectionDate, "{0:dd-MM-yyyy}", new { @class = "cCollectionDate form-control", placeholder = "Collection Date", id = "CollectionDateID" })  @*"{0:dd-MM-yyyy}",*@
-                    
+
                     @Html.ValidationMessageFor(m => m.CollectionDate)
                 </div>
 
+                <div class="form-group  col-md-4">
+                    @Html.LabelFor(m => m.CommonFundDueDate, new { @class = "control-label" })<span>*</span>
+                    @*@Html.TextBoxFor(m => m.CollectionDate, new { @class = "form-control" })*@
+                    @Html.TextBoxFor(m => m.CommonFundDueDate, "{0:dd-MM-yyyy}", new { @class = "cCommonFundDueDate form-control", placeholder = "DueDate", id = "DueDateID" })  @*"{0:dd-MM-yyyy}",*@
+
+                    @Html.ValidationMessageFor(m => m.CommonFundDueDate)
+                </div>
             </div>
 
 
@@ -94,6 +102,7 @@
         $(function () {
             /* format: 'dd/mm/yyyy'*/
             $("#CollectionDateID").datepicker();
+            $("#DueDateID").datepicker();
         });
     </script>
 

@@ -1,4 +1,5 @@
 ﻿using FlatManagement.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -11,7 +12,7 @@ namespace FlatManagement.Controllers
     public class SupplierController : Controller
     {
         private readonly FlatDBContext _context;
-
+        
         public SupplierController(FlatDBContext context)
         {
             _context = context;
@@ -20,7 +21,8 @@ namespace FlatManagement.Controllers
         // GET: Flat
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Suppliers.ToListAsync());
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            return View(await _context.Suppliers.Where(e => e.ApartCodeName == APART_CODE_LOCAL_VAR).ToListAsync());
         }
 
         // GET: Flat/Create
@@ -38,7 +40,10 @@ namespace FlatManagement.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddOrEdit([Bind("Id,Type,Amount,PrepairedBy,Start_Date,End_Date,Per_Address,Pre_Address,Email,Mobile,NID,ETIN")] SupplierVM supplierVM)
-        {                                                    
+        {
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            ModelState.Clear();
+            supplierVM.ApartCodeName = APART_CODE_LOCAL_VAR;
             if (ModelState.IsValid)                          
             {                                                
                 if (supplierVM.Id == 0)                      

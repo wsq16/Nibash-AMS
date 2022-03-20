@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -18,6 +19,21 @@ namespace FlatManagement.Models
         [Column(TypeName = "nvarchar(250)")]
         [Required(ErrorMessage = "Company Name field is required.")]
         public string  CompanyName { get; set; }
+
+        [DisplayName("Code")]
+        [MaxLength(20)]
+        [Column(TypeName = "nvarchar(250)")]
+        [Required(ErrorMessage = "Code.")]
+        [Remote(action: "IsCodeNameInUse", controller: "Company")]
+        public string ApartCodeName { get; set; }
+
+
+        [DisplayName("Logo")]
+        [MaxLength(250)]
+        [Column(TypeName = "nvarchar(250)")]
+        [Required(ErrorMessage = "Upload Logo.")]
+        public string LogoUri { get; set; }
+
 
         [DisplayName("Mobile")]
         [Column(TypeName = "nvarchar(250)")]

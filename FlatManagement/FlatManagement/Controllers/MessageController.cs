@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using FlatManagement.Utility;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FlatManagement.Controllers
 {
@@ -32,7 +33,7 @@ namespace FlatManagement.Controllers
             _logger = logger;
         }
 
-
+        [Authorize]
         public IActionResult Index()
         {
             List<SelectListItem> items = PopulateFlatOwners();
@@ -43,6 +44,9 @@ namespace FlatManagement.Controllers
         [HttpPost]
         public ActionResult Index(string submit, string[] flatOwnerList, string txtMsgBody)
         {
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
+            var APART_APART_LOCAL_VAR = HttpContext.Request.Cookies["COMNAME"];
+
             String msgBody="";
             try
             {
@@ -80,13 +84,13 @@ namespace FlatManagement.Controllers
                         }
 
                         mail.Subject = "Invitation";
-                        mail.Body = msgBody;
+                        mail.Body = msgBody +"Thanks And Best Regards "+ APART_APART_LOCAL_VAR;
                         mail.IsBodyHtml = true;
                         //  mail.Attachments.Add(new Attachment("C:\\file.zip"));
 
                         using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
                         {
-                            smtp.Credentials = new NetworkCredential("jubayer.ah@gmail.com", "aqftzxebzqizorae");
+                            smtp.Credentials = new NetworkCredential("elongatesdev@gmail.com", "aqitzohxddzutnve");
                             smtp.EnableSsl = true;
                             smtp.Send(mail);
                         }
@@ -156,13 +160,14 @@ namespace FlatManagement.Controllers
 
         public string GetMobileNumber(string mNum)
         {
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
             string constr = _configuration.GetConnectionString("DBConnectionString");
             string mobileNumStr = "";
 
             List<SelectListItem> items = new List<SelectListItem>();
             using (SqlConnection con = new SqlConnection(constr))
             {
-                string query = " SELECT Mobile FROM AspNetUsers WHERE AspNetUsers.UserName='"+mNum+"'";
+                string query = " SELECT Mobile FROM AspNetUsers WHERE AspNetUsers.UserName='"+mNum+ "' AND ApartCodeName='" + APART_CODE_LOCAL_VAR + "' AND IsActive='true' ";
                 using (SqlCommand cmd = new SqlCommand(query))
                 {
                     cmd.Connection = con;
@@ -183,12 +188,13 @@ namespace FlatManagement.Controllers
 
         public List<SelectListItem> PopulateFlatOwners()
         {
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
             string constr = _configuration.GetConnectionString("DBConnectionString");
 
             List<SelectListItem> items = new List<SelectListItem>();
             using (SqlConnection con = new SqlConnection(constr))
             {
-                string query = " SELECT FirstName, Email FROM AspNetUsers";
+                string query = " SELECT FirstName, LastName, Flat_No, Email FROM AspNetUsers WHERE ApartCodeName='" + APART_CODE_LOCAL_VAR + "' AND IsActive='true'";
                 using (SqlCommand cmd = new SqlCommand(query))
                 {
                     cmd.Connection = con;
@@ -199,7 +205,7 @@ namespace FlatManagement.Controllers
                         {
                             items.Add(new SelectListItem
                             {
-                                Text = sdr["FirstName"].ToString(),
+                                Text = sdr["FirstName"].ToString()+" "+ sdr["LastName"].ToString() + " (" + sdr["Flat_No"].ToString()+") ",
                                 Value = sdr["Email"].ToString()
                             });
                         }

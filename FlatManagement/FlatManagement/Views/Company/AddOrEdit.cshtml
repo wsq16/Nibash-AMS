@@ -1,0 +1,117 @@
+﻿@model FlatManagement.Models.CompanyVM
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+
+<h4>Create Appartment</h4>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="AddOrEdit" asp-controller="Company" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @Html.HiddenFor(m => m.Id)
+            <div class="form-group">
+                <label asp-for="CompanyName" class="control-label"></label>
+                <input asp-for="CompanyName" class="form-control" />
+                <span asp-validation-for="CompanyName" class="text-danger"></span>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+
+                    @if (@Model.LogoUri != null)
+                    {
+                        @Html.HiddenFor(model => model.LogoUri);
+                        <img id="blah" src="~/images/@Model.LogoUri" alt="@Model.ApartCodeName" asp-append-version="true" height="150" width="150" class="img-thumbnail">
+                    }
+                    else if (@Model.Id > 0)
+                    {
+                        <img id="blah" src="~/images/@Model.LogoUri" alt="Image" asp-append-version="true" height="150" width="150" class="img-thumbnail" />
+                    }
+                    else
+                    {
+                        <img id="blah" src="~/assets/icons/no_image_apartment.png" alt="Image" asp-append-version="true" height="150" width="150" class="img-thumbnail" />
+                    }
+                    <br />
+                    <input type="file" name="uploadFile" onchange="readURL(this);" accept="image/*" class="form-control" />
+                </div>
+            </div>
+
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="ApartCodeName" class="control-label"></label>
+                    @if (Model.Id == 0)
+                    {
+                        <input asp-for="ApartCodeName" class="form-control" />
+                        <span asp-validation-for="ApartCodeName" class="text-danger"></span>
+                    }
+                    @if (Model.Id != 0)
+                    {
+                        @Html.TextBoxFor(model => model.ApartCodeName, new { @placeholder = "Code Name", @class = "cCodeName form-control", @readonly = "readonly" })
+                    }
+
+
+
+
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="Mobile" class="control-label"></label>
+                    <input asp-for="Mobile" class="form-control" />
+                    <span asp-validation-for="Mobile" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="Email" class="control-label"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="Address" class="control-label"></label>
+                    <input asp-for="Address" class="form-control" />
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="License" class="control-label"></label>
+                    <input asp-for="License" class="form-control" />
+                    <span asp-validation-for="License" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="IsActive">Active:</label>
+                    @Html.CheckBoxFor(m => m.IsActive)
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <input type="submit" value="Submit" class="btn btn-primary btn-block" />
+                </div>
+                <div class="form-group col-md-6">
+                    <a asp-action="Index" class="btn btn-secondary btn-block"><i class="fa fa-table"></i>Back to List</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+<script>
+    /*image preview*/
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('#blah')
+                    .attr('src', e.target.result);
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+}

@@ -35,6 +35,7 @@ namespace FlatManagement.Models
         public bool IsActive { get; set; }
 
         public string FlatOwner { get; set; }
+        public string ApartCodeName { get; set; }
 
 
     }

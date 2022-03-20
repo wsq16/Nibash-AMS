@@ -1,0 +1,133 @@
+﻿@model IEnumerable<FlatManagement.Models.CommonFundVM>
+
+@{
+    ViewData["Title"] = "Index";
+}
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Collection" asp-controller="Report">
+            @*enctype="multipart/form-data" method="post"*@
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    &nbsp;
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="DateFrom">Date From:</label>
+                    <input type="text" name="dateFrom" value="@ViewBag.startdate" id="dateFrom" />
+                </div>
+
+                <div class="form-group col-md-4">
+                    <label for="DateFrom">Date To:</label>
+                    <input type="text" name="dateTo" value="@ViewBag.enddate " id="dateTo" />
+                </div>
+
+                <div class="form-group col-md-2">
+                    <input type="button" value="Search" onclick="OpenUrl();" class="btn btn-primary btn-block" />
+                </div>
+                <div class="form-group col-md-1">
+                    <input type="button" value="Print" onclick="OpenPrint();" class="btn btn-primary btn-block" />
+                </div>
+                <div class="form-group col-md-1">
+                    <input type="button" value="Cancel" onclick="OpenUrlHome();" class="btn btn-primary btn-block" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<hr />
+<h1>Collection List</h1>
+<hr />
+
+<table class="table  table-hover" id="flatdatatable">
+    <thead>
+        <tr style="background-color: #f7ecfd">
+            <th>
+                Sl.
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FundType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FlatNo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Amount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Year)
+            </th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @{ int rowNo = 0; }
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @{rowNo++;} @rowNo
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.FundType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FlatNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Amount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Year)
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>
+@section Scripts
+{
+
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            /* format: 'dd/mm/yyyy'*/
+            $("#dateFrom").datepicker();
+            $("#dateTo").datepicker();
+        });
+    </script>
+
+    <script>
+        function OpenUrl() {
+            var dateFrom = document.getElementById("dateFrom").value;
+            var dateTo = document.getElementById("dateTo").value;
+
+            window.location.href = "/Report/Collection?fromDate=" + dateFrom + "&toDate=" + dateTo;
+        }
+
+        function OpenUrlHome() {
+            window.location.href = "/Home/Index";
+        }
+
+        function OpenPrint() {
+            window.print();
+        }
+
+    </script>
+
+
+    @*<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.css" />
+
+        <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.js"></script>
+
+        <script>
+            $(document).ready(function () {
+                $("#flatdatatable").DataTable();
+            }
+            )
+        </script>*@
+}

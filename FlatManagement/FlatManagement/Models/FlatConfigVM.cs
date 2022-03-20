@@ -10,7 +10,10 @@ namespace FlatManagement.Models
 {
     public class FlatConfigVM
     {
+        [Key]
         public int Id { get; set; }
+
+        public int slId { get; set; }
 
         public bool isWing { get; set; }
        
@@ -44,10 +47,10 @@ namespace FlatManagement.Models
         //[Required(ErrorMessage = "Floor field is required.")]
         public int? Floor { get; set; }
 
-        [Key]
-        //[DisplayName("Flat No")]
+        
+        [DisplayName("Flat No")]
         [Column(TypeName = "nvarchar(25)")]
-        [Required(ErrorMessage = "Flat No field is required.")]
+       // [Required(ErrorMessage = "Flat No field is required.")]
         public string FlatNo { get; set; }
 
 
@@ -56,7 +59,7 @@ namespace FlatManagement.Models
 
         //[DisplayName("Total Flat")]
         //[Column(TypeName = "decimal(18)")]
-        [Required(ErrorMessage = "Total Floor field is required.")]
+       // [Required(ErrorMessage = "Total Floor field is required.")]
         public int? TotalFlat { get; set; }
 
         //[DisplayName("Flat Per Floor")]
@@ -77,5 +80,8 @@ namespace FlatManagement.Models
         //[DisplayName("Delimeter")]
         [Column(TypeName = "nvarchar(25)")]
         public string Delimeter { get; set; }
+
+        [DisplayName("Code")]
+        public string ApartCodeName { get; set; }
     }
 }

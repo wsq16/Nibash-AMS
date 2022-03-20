@@ -32,6 +32,7 @@ namespace FlatManagement.Models
         [DisplayName("Amount")]
         [Required(ErrorMessage = "Amount field is required.")]
         [Column(TypeName = "decimal(18,2)")]
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
         public Nullable<double>  Amount { get; set; }
         //public Nullable<decimal> Amount { get; set; }
 
@@ -47,7 +48,12 @@ namespace FlatManagement.Models
         [DisplayFormat(DataFormatString = "{0:MM'/'dd'/'yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? CollectionDate { get; set; } = DateTime.Now;
 
-
+        [DisplayName("Due Date")]
+        [Required(ErrorMessage = "Due Date field is required.")]
+        [Column(TypeName = "DateTime")]
+        [DisplayFormat(DataFormatString = "{0:MM'/'dd'/'yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? CommonFundDueDate { get; set; } = DateTime.Now;
+        
         [DisplayName("CollectionBy")]
         [Required(ErrorMessage = "Collection By field is required.")]
         [Column(TypeName = "nvarchar(25)")]
@@ -58,7 +64,8 @@ namespace FlatManagement.Models
         [Column(TypeName = "nvarchar(25)")]
         public Month Month { get; set; }
 
-
+        [DisplayName("Code")]
+        public string ApartCodeName { get; set; }
     }
 
     public enum Month
