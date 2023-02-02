@@ -264,9 +264,9 @@ namespace FlatManagement.Controllers
                 }
 
 
-                var user = new ApplicationUser 
+                var user = new ApplicationUser
                 {
-                    UserName = model.Email, 
+                    UserName = model.Email,
                     Email = model.Email,
                     FirstName = model.FirstName,
                     LastName = model.LastName,
@@ -280,7 +280,8 @@ namespace FlatManagement.Controllers
                     UserRole = model.UserRole,
                     Tenant = model.Tenant,
                     FlatOwner = model.FlatOwner,
-                    ApartCodeName = APART_CODE_LOCAL_VAR,
+                    //ApartCodeName = APART_CODE_LOCAL_VAR,
+                    ApartCodeName = model.ApartmentList,
                     IsActive = true
                 };
                 var result = await userManager.CreateAsync(user, model.Password);

@@ -83,5 +83,12 @@ namespace FlatManagement.Models
 
         [DisplayName("Code")]
         public string ApartCodeName { get; set; }
+
+        //Merged?
+        [DisplayName("Merged")]
+        public bool? Merged { get; set; }
+
+        [DisplayName("Merge Count")]
+        public int? MergerCount { get; set; }
     }
 }

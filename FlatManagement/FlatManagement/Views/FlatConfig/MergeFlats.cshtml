@@ -1,0 +1,143 @@
+﻿@using FlatManagement.ViewModel
+@model MergeFlatsViewModel
+
+@{
+    ViewData["Title"] = "Merger";
+}
+
+<style>
+    p.dotted {
+        border-style: dotted;
+        font-size: 25px;
+        /*border: 2px solid red;
+        border-radius: 25px;*/
+        border-radius: 25px;
+        background: #73AD21;
+        padding: 10px;
+        width: 150px;
+        height: 50px;
+    }
+
+    p.dashed {
+        border-style: dashed;
+    }
+
+    p.solid {
+        border-style: solid;
+    }
+
+    p.double {
+        border-style: double;
+    }
+
+    p.groove {
+        border-style: groove;
+    }
+
+    p.ridge {
+        border-style: ridge;
+    }
+
+    p.inset {
+        border-style: inset;
+    }
+
+    p.outset {
+        border-style: outset;
+    }
+
+    p.none {
+        border-style: none;
+    }
+
+    p.hidden {
+        border-style: hidden;
+    }
+
+    p.mix {
+        border-style: dotted dashed solid double;
+    }
+</style>
+
+
+<script type="text/javascript">
+    function valueChanged() {
+        if ($('.coupon_question').is(":checked")) {
+            $(".answer").show();
+            $(".question").hide();
+        }
+        else {
+            $(".answer").hide();
+            $(".question").show();
+        }
+    }
+</script>
+
+
+<h4>Merge Flat</h4>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="MergeFlats">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    @Html.Label("Select Wing")
+                    @Html.DropDownList("Wing", (IEnumerable
+                    <SelectListItem>)ViewData["Wing"],
+                    new { @class = "form-control" })
+                    
+                    @Html.ValidationMessageFor(m => m.Wing, "", new { @class = "error" })
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    @Html.Label("To Merge")
+                    @Html.DropDownList("ToMerge", (IEnumerable
+                    <SelectListItem>)ViewData["ToMerge"],
+                    new { @class = "form-control" })
+
+                    @Html.ValidationMessageFor(m => m.ToMerge, "", new { @class = "error" })
+                </div>
+                <div class="form-group col-md-6">
+                    @Html.Label("Merge With")
+                    @Html.DropDownList("WithMerge", (IEnumerable
+                    <SelectListItem>)ViewData["WithMerge"],
+                    new { @class = "form-control" })
+
+                    @Html.ValidationMessageFor(m => m.ToMerge, "", new { @class = "error" })
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    @Html.Label("Enter New Flat No")
+                    <input asp-for="NewFlatNo" />
+                    @Html.ValidationMessageFor(m => m.NewFlatNo, "", new { @class = "error" })
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <input type="submit" value="Submit" class="btn btn-primary btn-block" />
+                </div>
+                <div class="form-group col-md-6">
+                    <a asp-action="Index" class="btn btn-secondary btn-block"><i class="fa fa-table"></i>Back to List</a>
+                </div>
+            </div>
+
+
+        </form>
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+            }
+
+

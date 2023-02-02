@@ -1,8 +1,11 @@
 ﻿using FlatManagement.Models;
+using FlatManagement.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Nancy.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -109,6 +112,7 @@ namespace FlatManagement.Controllers
                                 addModel.ApartCodeName = APART_CODE_LOCAL_VAR;
                                 addModel.Floor = t;
                                 addModel.WingName = wingStyle;
+                                //addModel.Wing = wf;
                                 // addModel.Id = countID;
                                 addModel.FlatNo =  flatNumber;
                                 addModel.TotalFlat = TotalFlat;
@@ -211,7 +215,99 @@ namespace FlatManagement.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        //merge flat goes here
+        // GET
+        [Authorize]
+        public IActionResult MergeFlats()
+        {
+            var APART_CODE_LOCAL_VAR = HttpContext.Request.Cookies["COMCODE"];
 
+            bool IsWing = _context.FlatConfigs.Where(e => e.ApartCodeName == APART_CODE_LOCAL_VAR)
+                .Select(f => f.isWing).FirstOrDefault();
+
+            //supposed to be IsWing but the DB has reverse value
+            if (!IsWing)
+            {
+                //Select Wing
+                var WingList = _context.FlatConfigs
+                    .Where(e => e.ApartCodeName == APART_CODE_LOCAL_VAR).Select(f => f.WingName).Distinct()
+                    .Select(a => new SelectListItem
+                    {
+                        Text = a.ToString(),
+                        Value = a.ToString()
+                    });
+
+                ViewData["Wing"] = WingList.ToList();
+            };
+
+            //select Flat
+            var FlatList = from f in _context.FlatConfigs.Where(e => e.ApartCodeName == APART_CODE_LOCAL_VAR && !_context.Users.Select(m => m.Flat_No)
+                                     .Contains(e.FlatNo) || e.Merged == false)
+                           select new SelectListItem()
+                           {
+                               Value = f.Id.ToString(),
+                               Text = f.FlatNo
+                           };
+
+            ViewData["ToMerge"] = FlatList.ToList();
+            ViewData["WithMerge"] = FlatList.ToList();
+
+
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> MergeFlats(MergeFlatsViewModel mergeFlatsViewModel)
+        {
+            var toMerge = Int32.Parse(mergeFlatsViewModel.ToMerge);
+            var withMerge = Int32.Parse(mergeFlatsViewModel.WithMerge);
+            var wing = mergeFlatsViewModel.Wing;
+
+            var oldData = _context.FlatConfigs.Where(a => a.Id == toMerge).FirstOrDefault();
+
+            var newData = new FlatConfigVM
+            {
+                ApartCodeName = oldData.ApartCodeName,
+                WingName = oldData.WingName,
+                Delimeter = oldData.Delimeter,
+                FlatNo = mergeFlatsViewModel.NewFlatNo,
+                TotalFlat = oldData.TotalFlat,
+                Sequence = oldData.Sequence,
+                //Wing = oldData.Wing,
+                //FlatPerFloor = oldData.FlatPerFloor,
+                //FlatStartFrom = oldData.FlatStartFrom,
+                Merged = true,
+                MergerCount = 2,
+                Floor = oldData.Floor,
+                slId = oldData.slId,
+                //GroundFloorStart = oldData.GroundFloorStart
+
+            };
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(newData);
+                    await _context.SaveChangesAsync();
+
+                    var flats = await _context.FlatConfigs.FindAsync(toMerge);
+                    _context.FlatConfigs.Remove(flats);
+                    flats = await _context.FlatConfigs.FindAsync(withMerge);
+                    _context.FlatConfigs.Remove(flats);
+                    await _context.SaveChangesAsync();
+
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+
+                }
+                return View();
+            }
+
+            return View();
+        }
 
 
     }
